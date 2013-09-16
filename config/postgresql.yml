@@ -1,0 +1,24 @@
+Default: &defaults
+  user: minitrue
+  password: minitrue
+  host: localhost
+  port: 5432
+  database: minitrue
+  poolsize: 10
+
+Development:
+  <<: *defaults
+
+Testing:
+  database: minitrue_test
+  <<: *defaults
+
+Staging:
+  database: minitrue_staging
+  poolsize: 100
+  <<: *defaults
+
+Production:
+  database: minitrue_production
+  poolsize: 100
+  <<: *defaults
