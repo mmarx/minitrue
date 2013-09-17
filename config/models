@@ -8,5 +8,22 @@ Email
     user UserId Maybe
     verkey Text Maybe
     UniqueEmail email
+UserRole
+    user UserId
+    role Role
+    UniqueUserRole user
+MailingList
+    name Text
+    description Text
+    UniqueName name
+MailingListEmail
+    email EmailId
+    list MailingListId
+    UniqueEmailList email list
+MailingListRole
+    user UserId
+    list MailingListId
+    role ListRole
+    UniqueListUserRole user list
 
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)

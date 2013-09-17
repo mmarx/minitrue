@@ -1,0 +1,14 @@
+$newline never
+<h1>_{MsgLists}
+
+<h2>_{MsgAvailableLists}
+<ul>
+  $forall (Entity listId list) <- lists
+    <li>
+      <a href=@{ListR listId}>#{mailingListName list}
+
+<h2>_{MsgNewList}
+<form action=@{ListsR} method=post enctype=#{listET}>
+  ^{listForm}
+  <button type=reset>_{MsgResetButton}
+  <button type=submit>_{MsgSubmitButton}
