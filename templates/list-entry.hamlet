@@ -1,0 +1,22 @@
+$newline never
+<li .list-entry>
+  <a href=@{ListR listId}>#{mailingListName list}
+  <span .entry-actions>
+    <a href=##{modalId} .btn .btn-default .btn-tiny role=button data-toggle=modal>
+      <span .glyphicon .glyphicon-trash>
+  <div ##{modalId} .modal .fade tabindex=-1 role=dialog aria-labelledby=#{labelId} aria-hidden=true>
+    <div .modal-dialog>
+      <div .modal-content>
+        <div .modal-header>
+          <button type=button .close data-dismiss=modal aria-hidden=true>&times;
+          <h3 ##{labelId}>#{mailingListName list}
+        <div .modal-body>
+          <p>_{MsgDeleteListConfirm $ unpack $ mailingListName $ list}
+        <div .modal-footer>
+          <form .form-inline action=@{ListDeleteR listId} method=post enctype=#{deleteET}>
+            ^{deleteWidget}
+            <button .btn .btn-default data-dismiss=modal type=button>
+              _{MsgCancelButton}
+            <button .btn .btn-primary .btn-danger type=submit>
+              <span .glyphicon .glyphicon-trash>
+              _{MsgDeleteButton}

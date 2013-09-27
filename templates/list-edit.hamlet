@@ -1,0 +1,5 @@
+$newline never
+<form .form-inline action=@{editAction} method=post enctype=#{editET}>
+  ^{editWidget}
+  <button .btn .btn-default type=reset>_{MsgResetButton}
+  <button .btn .btn-default type=submit>_{MsgSubmitButton}

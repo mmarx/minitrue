@@ -7,4 +7,5 @@
 / HomeR GET POST
 
 /list/ ListsR GET POST
-/list/#MailingListId ListR GET
+/list/#MailingListId ListR GET POST
+/list/#MailingListId/delete ListDeleteR POST

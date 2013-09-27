@@ -3,12 +3,8 @@ $newline never
 
 <h2>_{MsgAvailableLists}
 <ul>
-  $forall (Entity listId list) <- lists
-    <li>
-      <a href=@{ListR listId}>#{mailingListName list}
+  $forall list <- lists
+    ^{listEntry list deleteForm}
 
 <h2>_{MsgNewList}
-<form action=@{ListsR} method=post enctype=#{listET}>
-  ^{listForm}
-  <button type=reset>_{MsgResetButton}
-  <button type=submit>_{MsgSubmitButton}
+^{listEditor Nothing}
