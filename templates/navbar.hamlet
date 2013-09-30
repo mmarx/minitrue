@@ -1,0 +1,30 @@
+$newline never
+<nav .navbar .navbar-inverse .navbar-fixed-top>
+  <div .navbar-header>
+    <button type=button .navbar-toggle data-toggle=collapse data-target=.navbar-minitrue-collapse>
+      <span .sr-only>Toggle navigation
+      <span .icon-bar>
+      <span .icon-bar>
+      <span .icon-bar>
+    <a href=# .navbar-brand>
+      minitrue
+  <div .navbar-collapse .collapse .navbar-minitrue-collapse>
+    <ul .nav .navbar-nav>
+      <li>
+        <a href=@{HomeR}>_{MsgNavSubscriptions}
+      <li>
+        <a href=@{ListsR}>_{MsgNavLists}
+    <ul .nav .navbar-nav .navbar-right>
+      $maybe Entity _ auth <- mAuth
+        <li .dropdown>
+          <a href=# .dropdown-toggle data-toggle=dropdown>
+            _{MsgLoggedInAs $ userEmail auth}
+            <b .caret>
+          <ul .dropdown-menu>
+            <li>
+              <a href=@{AuthR setpassR}>_{MsgSetPassword}
+            <li>
+              <a href=@{AuthR LogoutR}>_{MsgLogout}
+      $nothing
+        <li>
+          <a href=@{AuthR LoginR}>_{MsgLogin}

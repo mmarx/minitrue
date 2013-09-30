@@ -1,6 +1,8 @@
 module Foundation where
 
 import Prelude
+import Data.Text (Text)
+import qualified Data.Text as T
 import Yesod
 import Yesod.Static
 import Yesod.Auth
@@ -12,10 +14,12 @@ import Network.HTTP.Conduit (Manager)
 import qualified Settings
 import Settings.Development (development)
 import qualified Database.Persist
+import qualified Network.Mail.SMTP as SMTP
 import Database.Persist.Sql (SqlPersistT)
 import Settings.StaticFiles
-import Settings (widgetFile, Extra (..))
+import Settings (widgetFile, Extra (..), mailHost, mailSenderAddress)
 import Model
+import Mail
 import Text.Jasmine (minifym)
 import Text.Hamlet (hamletFile)
 import System.Log.FastLogger (Logger)
@@ -62,6 +66,9 @@ instance Yesod App where
     defaultLayout widget = do
         master <- getYesod
         mmsg <- getMessage
+        renderMsg <- getMessageRender :: Handler (AppMessage -> Text)
+        mAuth <- maybeAuth
+        navbar <- widgetToPageContent $(widgetFile "navbar")
 
         -- We break up the default layout into two components:
         -- default-layout is the contents of the body tag, and

@@ -9,11 +9,12 @@ $newline never
         <meta charset="UTF-8">
 
         <title>#{pageTitle pc}
-        <meta name="description" content="">
-        <meta name="author" content="">
+        <meta name="description" content="The Ministry of Truth">
+        <meta name="author" content="The Ministry of Truth">
 
         <meta name="viewport" content="width=device-width,initial-scale=1">
 
+        ^{pageHead navbar}
         ^{pageHead pc}
 
         \<!--[if lt IE 9]>
@@ -24,18 +25,7 @@ $newline never
           document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js');
     <body>
       <header>
-        <nav .navbar .navbar-inverse .navbar-fixed-top>
-          <div .navbar-header>
-            <button type=button .navbar-toggle data-toggle=collapse data-target=.navbar-minitrue-collapse>
-              <span .sr-only>Toggle navigation
-              <span .icon-bar>
-              <span .icon-bar>
-              <span .icon-bar>
-            <a href=@{HomeR} .navbar-brand>
-              minitrue
-          <div .navbar-collapse .collapse .navbar-minitrue-collapse>
-            <ul .nav .navbar-nav>
-              <li><a href=@{ListsR}>FIXME</a>
+        ^{pageBody navbar}
       <div .container>
         <div id="main" role="main">
           ^{pageBody pc}
