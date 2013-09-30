@@ -11,12 +11,14 @@ import Language.Haskell.TH.Syntax
 import Database.Persist.Postgresql (PostgresConf)
 import Yesod.Default.Config
 import Yesod.Default.Util
-import Data.Text (Text)
+import Data.Text (Text, unpack)
 import Data.Yaml
 import Control.Applicative
+import Control.Arrow ((>>>), (&&&))
 import Settings.Development
 import Data.Default (def)
 import Text.Hamlet
+import Network.Mail.Mime (Address (..))
 
 -- | Which Persistent backend this site is using.
 type PersistConf = PostgresConf
@@ -67,10 +69,20 @@ widgetFile = (if development then widgetFileReload
 
 data Extra = Extra
     { extraCopyright :: Text
-    , extraAnalytics :: Maybe Text -- ^ Google Analytics
+    , extraMailHost :: Text
+    , extraMailFromName :: Maybe Text
+    , extraMailFromAddress :: Text
     } deriving Show
+
+mailHost :: Extra -> String
+mailHost = unpack . extraMailHost
+
+mailSenderAddress :: Extra -> Address
+mailSenderAddress = (extraMailFromName &&& extraMailFromAddress) >>> uncurry Address
 
 parseExtra :: DefaultEnv -> Object -> Parser Extra
 parseExtra _ o = Extra
     <$> o .:  "copyright"
-    <*> o .:? "analytics"
+    <*> o .:  "mailHost"
+    <*> o .:? "mailFromName"
+    <*> o .:  "mailFromAddress"

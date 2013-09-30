@@ -2,8 +2,10 @@ Default: &defaults
   host: "*4" # any IPv4 host
   port: 3000
   approot: "http://localhost:3000"
-  copyright: "minitrue &copy; 2013 Maximilian Marx"
-  #analytics: UA-YOURCODE
+  copyright: "The Ministry of Truth.<br> &copy; 2013 Maximilian Marx"
+  mailHost: "localhost"
+  mailFromName: "The Ministry of Truth"
+  mailFromAddress: "minitrue@localhost"
 
 Development:
   <<: *defaults
