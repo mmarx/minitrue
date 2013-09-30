@@ -11,7 +11,7 @@ $newline never
           <button type=button .close data-dismiss=modal aria-hidden=true>&times;
           <h3 ##{labelId}>#{mailingListName list}
         <div .modal-body>
-          <p>_{MsgDeleteListConfirm $ unpack $ mailingListName $ list}
+          <p>_{MsgDeleteListConfirm $ mailingListName $ list}
         <div .modal-footer>
           <form .form-inline action=@{ListDeleteR listId} method=post enctype=#{deleteET}>
             ^{deleteWidget}

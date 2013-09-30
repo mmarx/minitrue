@@ -1,5 +1,5 @@
 $newline never
-<h1>_{MsgList $ unpack $ mailingListName $ list}
+<h1>_{MsgList $ mailingListName $ list}
 
 <h2>_{MsgEditList}
 ^{listEditor $ Just $ (listId, list)}

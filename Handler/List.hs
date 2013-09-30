@@ -1,7 +1,6 @@
 module Handler.List where
 
 import Import
-import Data.Text (unpack)
 
 getListsR :: Handler Html
 getListsR = do
@@ -16,7 +15,7 @@ postListsR = do
   case listResult of
     FormSuccess list -> do
       _ <- runDB $ insert list
-      setMessageI . MsgCreateListSuccess . unpack . mailingListName $ list
+      setMessageI . MsgCreateListSuccess . mailingListName $ list
     _ -> do
       setMessageI MsgCreateListFail
   redirect ListsR
@@ -34,7 +33,7 @@ postListR listId = do
   case listResult of
     FormSuccess list -> do
       runDB $ replace listId list
-      setMessageI . MsgEditListSuccess . unpack . mailingListName $ list
+      setMessageI . MsgEditListSuccess . mailingListName $ list
     _ -> do
       setMessageI MsgEditListFail
   redirect $ ListR listId
@@ -48,7 +47,7 @@ postListDeleteR listId = do
         list <- get404 listId
         delete listId
         return $ mailingListName list
-      setMessageI . MsgDeleteListSuccess . unpack $ name
+      setMessageI . MsgDeleteListSuccess $ name
     _ -> do
       setMessageI MsgDeleteListFail
   redirect ListsR
