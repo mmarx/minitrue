@@ -1,13 +1,14 @@
 module Foundation where
 
 import Prelude
+import Control.Monad (join)
+import Data.Maybe (isJust)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Yesod
 import Yesod.Static
 import Yesod.Auth
-import Yesod.Auth.BrowserId
-import Yesod.Auth.GoogleEmail
+import Yesod.Auth.Email
 import Yesod.Default.Config
 import Yesod.Default.Util (addStaticContentExternal)
 import Network.HTTP.Conduit (Manager)
@@ -140,21 +141,77 @@ instance YesodAuth App where
         case x of
             Just (Entity uid _) -> return $ Just uid
             Nothing -> do
-                fmap Just $ insert $ User (credsIdent creds) Nothing
+                fmap Just $ insert $ User (credsIdent creds) Nothing Nothing False
 
     -- You can add other plugins like BrowserID, email or OAuth here
-    authPlugins _ = [authBrowserId def, authGoogleEmail]
+    authPlugins _ = [authEmail]
 
-    authHttpManager = httpManager
+    authHttpManager = error "No HTTP manager neccessary."
+
+instance YesodAuthEmail App where
+  type AuthEmailId App = UserId
+
+  afterPasswordRoute _ = ListsR
+  addUnverified email verkey = runDB $ insert $
+                               User email Nothing (Just verkey) False
+
+  verifyAccount uId = runDB $ do
+    mUser <- get uId
+    case mUser of
+      Nothing -> return Nothing
+      Just _ -> do
+        update uId [ UserVerified =. True
+                   , UserVerkey =. Nothing
+                   ]
+        return $ Just uId
+
+  sendVerifyEmail email verkey verurl = do
+    renderMsg <- getMessageRender
+    extra <- getExtra
+    let sender = mailSenderAddress extra
+    let receiver = Address Nothing email
+    let subject = renderMsg MsgVerifyEmailSubject
+    let body = T.replace "\\n" "\n" $ renderMsg $ MsgVerifyEmailBody verkey verurl
+    sendMail $ mailFromTo sender receiver subject body
+
+  getVerifyKey = runDB . fmap (join . fmap userVerkey) . get
+  setVerifyKey uId verkey = runDB $ update uId [UserVerkey =. Just verkey]
+  getPassword = runDB . fmap (join . fmap userPassword) . get
+  setPassword uId pwd = runDB $ update uId [UserPassword =. Just pwd]
+
+  getEmail = runDB . fmap (fmap userEmail) . get
+  getEmailCreds email = runDB $ do
+    mUser <- getBy $ UniqueUser email
+    case mUser of
+      Nothing -> return Nothing
+      Just (Entity uId user) -> return $ Just EmailCreds
+        { emailCredsId = uId
+        , emailCredsAuthId = Just uId
+        , emailCredsEmail = userEmail user
+        , emailCredsStatus = isJust $ userPassword user
+        , emailCredsVerkey = userVerkey user
+        }
+
+  checkPasswordSecurity _ pwd = do
+    case T.compareLength pwd 8 of
+      LT -> return $ Left "Password must be at least 8 characters long."
+      _ -> return $ Right ()
+
+  -- for yesod-auth-1.2.3+
+  -- normalizeEmailAddress = T.toLower
+
+getExtra :: Handler Extra
+getExtra = fmap (appExtra . settings) getYesod
+
+sendMail :: Mail -> Handler ()
+sendMail mail = do
+  host <- getExtra >>= return . mailHost
+  lift $ SMTP.sendMail host mail
 
 -- This instance is required to use forms. You can modify renderMessage to
 -- achieve customized and internationalized form validation messages.
 instance RenderMessage App FormMessage where
     renderMessage _ _ = defaultFormMessage
-
--- | Get the 'Extra' value, used to hold data from the settings.yml file.
-getExtra :: Handler Extra
-getExtra = fmap (appExtra . settings) getYesod
 
 -- Note: previous versions of the scaffolding included a deliver function to
 -- send emails. Unfortunately, there are too many different options for us to

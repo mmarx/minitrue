@@ -1,13 +1,10 @@
 User
-    ident Text
-    password Text Maybe
-    UniqueUser ident
-    deriving Typeable
-Email
     email Text
-    user UserId Maybe
+    password Text Maybe
     verkey Text Maybe
-    UniqueEmail email
+    verified Bool
+    UniqueUser email
+    deriving Typeable
 UserRole
     user UserId
     role Role
@@ -16,14 +13,10 @@ MailingList
     name Text
     description Text
     UniqueName name
-MailingListEmail
-    email EmailId
-    list MailingListId
-    UniqueEmailList email list
-MailingListRole
+MailingListUser
     user UserId
     list MailingListId
     role ListRole
-    UniqueListUserRole user list
+    UniqueListUser user list
 
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)
