@@ -184,10 +184,13 @@ instance YesodAuthEmail App where
     renderMsg <- getMessageRender
     extra <- getExtra
     let sender = mailSenderAddress extra
-    let receiver = Address Nothing email
-    let subject = renderMsg MsgVerifyEmailSubject
-    let body = T.replace "\\n" "\n" $ renderMsg $ MsgVerifyEmailBody verkey verurl
-    sendMail $ mailFromTo sender receiver subject body
+        receiver = Address Nothing email
+        subject = renderMsg MsgVerifyEmailSubject
+        body = renderMsg $ MsgVerifyEmailBody verkey verurl
+        body' = MailBody { plainBody = [lt|#{T.replace "\\n" "\n" body}|]
+                         , htmlBody = [shamlet|#{T.replace "\\n" "<br>" body}|]
+                         }
+    sendMail $ mailFromTo sender receiver subject body'
 
   getVerifyKey = runDB . fmap (join . fmap userVerkey) . get
   setVerifyKey uId verkey = runDB $ update uId [UserVerkey =. Just verkey]

@@ -23,6 +23,7 @@ library
                      Handler.List
                      Roles
                      Mail
+                     ListMail
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT
@@ -40,6 +41,7 @@ library
                 GADTs
                 GeneralizedNewtypeDeriving
                 FlexibleContexts
+                FlexibleInstances
                 EmptyDataDecls
                 NoMonomorphismRestriction
                 DeriveDataTypeable

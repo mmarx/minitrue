@@ -14,3 +14,7 @@ import Roles
 -- http://www.yesodweb.com/book/persistent/
 share [mkPersist sqlOnlySettings, mkMigrate "migrateAll"]
     $(persistFileWith lowerCaseSettings "config/models")
+
+data Message = Message { messageSubject :: Text
+                       , messageBody :: Textarea
+                       }

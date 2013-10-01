@@ -6,6 +6,7 @@ Default: &defaults
   mailHost: "localhost"
   mailFromName: "The Ministry of Truth"
   mailFromAddress: "minitrue@localhost"
+  mailListIdSuffix: "localhost"
 
 Development:
   <<: *defaults

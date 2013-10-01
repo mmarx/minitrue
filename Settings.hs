@@ -72,6 +72,7 @@ data Extra = Extra
     , extraMailHost :: Text
     , extraMailFromName :: Maybe Text
     , extraMailFromAddress :: Text
+    , extraMailListIdSuffix :: Text
     } deriving Show
 
 mailHost :: Extra -> String
@@ -86,3 +87,4 @@ parseExtra _ o = Extra
     <*> o .:  "mailHost"
     <*> o .:? "mailFromName"
     <*> o .:  "mailFromAddress"
+    <*> o .:  "mailListIdSuffix"
