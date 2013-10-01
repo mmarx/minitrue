@@ -7,6 +7,14 @@ SetPassword: Change password
 NavSubscriptions: List subscriptions
 NavLists: Manage lists
 
+RoleConsumer: User
+RoleInnerCircle: Member of the Inner Circle™
+RoleAdmin: Administrator
+
+ListRoleNothing: not subscribed
+ListRoleReceiver: Subscriber
+ListRoleSender: Author
+
 List name@Text: Mailing list “#{name}”
 Lists: Mailing lists
 AvailableLists: Available lists
@@ -19,9 +27,22 @@ CreateListSuccess name@Text: List “#{name}” created.
 DeleteListFail: Could not delete list.
 DeleteListSuccess name@Text: List “#{name}” deleted.
 DeleteListConfirm name@Text: Really delete List “#{name}”?
+SendMessage: Send message
+SendMessageFail: Could not send message.
+SendMessageSuccess subject@Text name@Text: Message “#{subject}” sent to “#{name}”.
 
 NameField: Name
 DescField: Description
+BodyField: Body
+SubjectField: Subject
+
+SubscriptionStatus: Status
+ListActions: Actions
+
+ActionSubscribe: subscribe
+ActionUnsubscribe: unsubscribe
+ActionSendMessage: send message
+ActionEditList: edit list
 
 CancelButton: Cancel
 ResetButton: Reset

@@ -4,8 +4,11 @@
 /favicon.ico FaviconR GET
 /robots.txt RobotsR GET
 
-/ HomeR GET POST
+/ HomeR GET
 
 /list/ ListsR GET POST
 /list/#MailingListId ListR GET POST
 /list/#MailingListId/delete ListDeleteR POST
+/list/#MailingListId/send SendMessageR GET POST
+/list/#MailingListId/subscribe SubscribeR POST
+/list/#MailingListId/unsubscribe UnsubscribeR POST

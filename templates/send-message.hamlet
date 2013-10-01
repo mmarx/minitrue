@@ -1,0 +1,12 @@
+$newline never
+<div .page-header>
+  <h1>
+    _{MsgSendMessage}
+    \ <small>
+        _{MsgList $ mailingListName list}
+
+<form action=@{SendMessageR listId} method=post enctype=#{msgET}>
+  ^{msgWidget}
+  <div .btn-toolbar>
+    <button .btn .btn-default type=reset>_{MsgResetButton}
+    <button .btn .btn-primary type=submit>_{MsgSubmitButton}
