@@ -1,9 +1,11 @@
 $newline never
 <li .list-entry>
-  <a href=@{ListR listId}>#{mailingListName list}
-  <span .entry-actions>
-    <a href=##{modalId} .btn .btn-default .btn-tiny role=button data-toggle=modal>
-      <span .glyphicon .glyphicon-trash>
+  <ul .list-inline>
+    <li>
+      <a href=@{ListR listId}>#{mailingListName list}
+    <li>
+      <a href=##{modalId} .btn .btn-default .btn-tiny role=button data-toggle=modal>
+        <span .glyphicon .glyphicon-trash>
   <div ##{modalId} .modal .fade tabindex=-1 role=dialog aria-labelledby=#{labelId} aria-hidden=true>
     <div .modal-dialog>
       <div .modal-content>
