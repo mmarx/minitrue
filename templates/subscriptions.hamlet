@@ -35,7 +35,3 @@ $newline never
                     <button .btn-xs .btn .btn-success type=submit>
                       <span .glyphicon .glyphicon-ok>
                       \ _{MsgActionSubscribe}
-              <li>
-                <a href=@{ListR listId} .btn-xs .btn .btn-default type=button>
-                 <span .glyphicon .glyphicon-wrench>
-                 \ _{MsgActionEditList}

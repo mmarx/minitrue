@@ -3,6 +3,7 @@ Login: Login
 Logout: Logout
 LoggedInAs name@Text: Logged in as “#{name}”
 SetPassword: Change password
+Register: Register
 
 NavSubscriptions: List subscriptions
 NavLists: Manage lists
@@ -50,4 +51,4 @@ SubmitButton: Submit
 DeleteButton: Delete
 
 VerifyEmailSubject: minitrue: Verify your email address.
-VerifyEmailBody key@Text url@Text: Test\n\nURL: #{url}\nkey: #{key}\ntseT
+VerifyEmailBody key@Text url@Text: URL: #{url}\nkey: #{key}

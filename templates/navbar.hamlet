@@ -12,8 +12,11 @@ $newline never
     <ul .nav .navbar-nav>
       <li>
         <a href=@{HomeR}>_{MsgNavSubscriptions}
-      <li>
-        <a href=@{ListsR}>_{MsgNavLists}
+      $case mRole
+        $of Just Admin
+          <li>
+            <a href=@{ListsR}>_{MsgNavLists}
+        $of _
     <ul .nav .navbar-nav .navbar-right>
       $maybe Entity _ auth <- mAuth
         <li .dropdown>
@@ -28,3 +31,5 @@ $newline never
       $nothing
         <li>
           <a href=@{AuthR LoginR}>_{MsgLogin}
+        <li>
+          <a href=@{AuthR registerR}>_{MsgRegister}
