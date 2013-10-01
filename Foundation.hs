@@ -20,9 +20,11 @@ import Database.Persist.Sql (SqlPersistT)
 import Settings.StaticFiles
 import Settings (widgetFile, Extra (..), mailHost, mailSenderAddress)
 import Model
+import Roles
 import Mail
 import Text.Jasmine (minifym)
 import Text.Hamlet (hamletFile)
+import Text.Shakespeare.Text (lt)
 import System.Log.FastLogger (Logger)
 import Text.Blaze.Html (preEscapedToHtml)
 
@@ -98,6 +100,19 @@ instance Yesod App where
 
     -- The page to be redirected to when authentication is required.
     authRoute _ = Just $ AuthR LoginR
+
+    isAuthorized HomeR _ = isLoggedIn
+    isAuthorized ListsR _ = isAdmin
+    isAuthorized (ListR listId) _ = canEditList listId
+    isAuthorized (ListDeleteR _) _ = isAdmin
+    isAuthorized (SendMessageR listId) _ = canSendToList listId
+    isAuthorized (SubscribeR listId) _ = canSubscribeToList listId
+    isAuthorized (UnsubscribeR listId) _ = canUnsubscribeFromList listId
+
+    isAuthorized (StaticR _) _ = return Authorized
+    isAuthorized (AuthR _) _ = return Authorized
+    isAuthorized FaviconR _ = return Authorized
+    isAuthorized RobotsR _ = return Authorized
 
     -- This function creates static content files in the static folder
     -- and names them based on a hash of their content. This allows
@@ -212,6 +227,78 @@ sendMail mail = do
 -- achieve customized and internationalized form validation messages.
 instance RenderMessage App FormMessage where
     renderMessage _ _ = defaultFormMessage
+
+instance RenderMessage App Role where
+  renderMessage master langs = renderMessage master langs . roleMessage
+
+instance RenderMessage App ListRole where
+   renderMessage master langs = renderMessage master langs . listRoleMessage . Just
+
+instance RenderMessage App (Maybe ListRole) where
+   renderMessage master langs = renderMessage master langs . listRoleMessage
+
+roleMessage :: Role -> AppMessage
+roleMessage Consumer = MsgRoleConsumer
+roleMessage InnerCircle = MsgRoleInnerCircle
+roleMessage Admin = MsgRoleAdmin
+
+listRoleMessage :: Maybe ListRole -> AppMessage
+listRoleMessage Nothing = MsgListRoleNothing
+listRoleMessage (Just Receiver) = MsgListRoleReceiver
+listRoleMessage (Just Sender) = MsgListRoleSender
+
+isLoggedIn :: Handler AuthResult
+isLoggedIn = do
+  mUserId <- maybeAuthId
+  case mUserId of
+    Nothing -> return AuthenticationRequired
+    Just _ -> return Authorized
+
+getUserRole :: Handler (Maybe Role)
+getUserRole = do
+  mUserId <- maybeAuthId
+  case mUserId of
+    Nothing -> return Nothing
+    Just userId -> do
+      userRole <- runDB $ getBy $ UniqueUserRole userId
+      return $ fmap (userRoleRole . entityVal) userRole
+
+getListUserRole :: MailingListId -> Handler (Maybe ListRole)
+getListUserRole listId = do
+  mUserId <- maybeAuthId
+  case mUserId of
+    Nothing -> return Nothing
+    Just userId -> do
+      listRole <- runDB $ getBy $ UniqueListUser userId listId
+      return $ fmap (mailingListUserRole . entityVal) listRole
+
+isAdmin :: Handler AuthResult
+isAdmin = do
+  role <- getUserRole
+  case role of
+    Just Admin -> return Authorized
+    Nothing -> return AuthenticationRequired
+    _ -> return $ Unauthorized "Must be an Admin."
+
+canEditList :: MailingListId -> Handler AuthResult
+canEditList listId = do
+  role <- getListUserRole listId
+  case role of
+    Just Sender -> return Authorized
+    _ -> isAdmin
+
+canSendToList :: MailingListId -> Handler AuthResult
+canSendToList listId = do
+  role <- getListUserRole listId
+  case role of
+    Just Sender -> return Authorized
+    _ -> return $ Unauthorized "Must be an Author."
+
+canSubscribeToList :: MailingListId -> Handler AuthResult
+canSubscribeToList _ = return Authorized
+
+canUnsubscribeFromList :: MailingListId -> Handler AuthResult
+canUnsubscribeFromList _ = return Authorized
 
 -- Note: previous versions of the scaffolding included a deliver function to
 -- send emails. Unfortunately, there are too many different options for us to
