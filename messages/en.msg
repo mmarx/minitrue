@@ -41,6 +41,8 @@ SubjectField: Subject
 SubscriptionStatus: Status
 ListActions: Actions
 SubscriberActions: Actions
+SubscriberCount: Subscribers
+SenderCount: Authors
 
 EmailAddress: Email
 Role: Role
@@ -51,6 +53,7 @@ ActionSubscribe: subscribe
 ActionUnsubscribe: unsubscribe
 ActionSendMessage: send message
 ActionEditList: edit list
+ActionDeleteList: delete list
 
 CancelButton: Cancel
 ResetButton: Reset

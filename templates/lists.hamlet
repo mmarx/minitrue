@@ -2,9 +2,22 @@ $newline never
 <h1>_{MsgLists}
 
 <h2>_{MsgAvailableLists}
-<ul>
-  $forall list <- lists
-    ^{listEntry list deleteForm}
+<table .table .table-striped>
+  <thead>
+    <th>_{MsgNameField}
+    <th>_{MsgDescField}
+    <th>_{MsgSubscriberCount}
+    <th>_{MsgSenderCount}
+    <th>_{MsgListActions}
+  <tbody>
+    $forall (list, subscribers, authors) <- lists
+      $with lst <- entityVal list
+        <tr>
+          <td>#{mailingListName lst}
+          <td>#{mailingListDescription lst}
+          <td>#{subscribers}
+          <td>#{authors}
+          <td>^{listEntry list deleteForm}
 
 <h2>_{MsgNewList}
 ^{listEditor Nothing}

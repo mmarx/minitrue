@@ -6,9 +6,16 @@ import ListMail
 getListsR :: Handler Html
 getListsR = do
   lists <- runDB $ selectList [] [Asc MailingListName]
+           >>= mapM listInfo
   deleteForm <- generateFormPost $ listDeleteForm
   defaultLayout $ do
     $(widgetFile "lists")
+  where listInfo lst@(Entity listId _) = do
+          subs <- count [MailingListUserList ==. listId]
+          auths <- count [ MailingListUserList ==. listId
+                        , MailingListUserRole ==. Sender
+                        ]
+          return (lst, subs, auths)
 
 postListsR :: Handler Html
 postListsR = do
