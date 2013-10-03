@@ -109,6 +109,8 @@ instance Yesod App where
     isAuthorized (SendMessageR listId) _ = canSendToList listId
     isAuthorized (SubscribeR listId) _ = canSubscribeToList listId
     isAuthorized (UnsubscribeR listId) _ = canUnsubscribeFromList listId
+    isAuthorized (PromoteR listId _) _ = canEditList listId
+    isAuthorized (DemoteR listId _) _ = canEditList listId
 
     isAuthorized (StaticR _) _ = return Authorized
     isAuthorized (AuthR _) _ = return Authorized

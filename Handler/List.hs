@@ -23,9 +23,19 @@ postListsR = do
 
 getListR :: MailingListId -> Handler Html
 getListR listId = do
-  list <- runDB $ get404 listId
+  (list, subscribers) <- runDB $ do
+    lst <- get404 listId
+    subs <- selectList [MailingListUserList ==. listId] [Asc MailingListUserUser]
+            >>= mapM subscriber
+    return (lst, subs)
   defaultLayout $ do
     $(widgetFile "list")
+  where subscriber :: Entity MailingListUser -> YesodDB App (UserId, Text, ListRole)
+        subscriber (Entity _ mlu) = do
+          let userId = mailingListUserUser mlu
+              role = mailingListUserRole mlu
+          email <- get404 userId >>= return . userEmail
+          return (userId, email, role)
 
 postListR :: MailingListId -> Handler Html
 postListR listId = do
@@ -74,6 +84,20 @@ postSendMessageR listId = do
     _ -> do
       setMessageI MsgSendMessageFail
       redirect $ SendMessageR listId
+
+postPromoteR :: MailingListId -> UserId -> Handler Html
+postPromoteR listId userId = do
+  runDB $ do
+    (Entity mluId _) <- getBy404 $ UniqueListUser userId listId
+    update mluId [MailingListUserRole =. Sender]
+  redirect $ ListR listId
+
+postDemoteR :: MailingListId -> UserId -> Handler Html
+postDemoteR listId userId = do
+  runDB $ do
+    (Entity mluId _) <- getBy404 $ UniqueListUser userId listId
+    update mluId [MailingListUserRole =. Receiver]
+  redirect $ ListR listId
 
 listEntry :: Entity MailingList -> (Widget, Enctype) -> Widget
 listEntry (Entity listId list) (deleteWidget, deleteET) = do

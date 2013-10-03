@@ -1,5 +1,29 @@
 $newline never
 <h1>_{MsgList $ mailingListName $ list}
 
+<h2>_{MsgListSubscribers}
+<table .table .table-striped>
+  <thead>
+    <th>_{MsgEmailAddress}
+    <th>_{MsgRole}
+    <th>_{MsgSubscriberActions}
+  <tbody>
+    $forall (userId, email, role) <- subscribers
+      <tr>
+        <td>#{email}
+        <td>_{role}
+        <td>
+          $case role
+            $of Receiver
+              <form .form-inline method=post action=@{PromoteR listId userId}>
+                <button .btn-xs .btn .btn-success type=submit>
+                  <span .glyphicon .glyphicon-comment>
+                  \ _{MsgPromoteSubscriber}
+            $of Sender
+              <form .form-inline method=post action=@{DemoteR listId userId}>
+                <button .btn-xs .btn .btn-danger type=submit>
+                  <span .glyphicon .glyphicon-book>
+                  \ _{MsgDemoteSubscriber}
+
 <h2>_{MsgEditList}
 ^{listEditor $ Just $ (listId, list)}

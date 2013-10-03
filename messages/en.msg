@@ -18,6 +18,7 @@ ListRoleSender: Author
 
 List name@Text: Mailing list “#{name}”
 Lists: Mailing lists
+ListSubscribers: List subscribers
 AvailableLists: Available lists
 NewList: New list
 EditList: Edit list
@@ -39,6 +40,12 @@ SubjectField: Subject
 
 SubscriptionStatus: Status
 ListActions: Actions
+SubscriberActions: Actions
+
+EmailAddress: Email
+Role: Role
+PromoteSubscriber: Promote to Author
+DemoteSubscriber: Demote to Subscriber
 
 ActionSubscribe: subscribe
 ActionUnsubscribe: unsubscribe
