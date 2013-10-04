@@ -110,6 +110,12 @@ postDemoteR listId userId = do
 
 listEntry :: Entity MailingList -> (Widget, Enctype) -> Widget
 listEntry (Entity listId list) (deleteWidget, deleteET) = do
+  canSend <- handlerToWidget $ do
+    userId <- requireAuthId
+    mr <- runDB $ getBy $ UniqueListUser userId listId
+    case mailingListUserRole . entityVal <$> mr of
+      Just Sender -> return True
+      _ -> return False
   modalId <- newIdent
   labelId <- newIdent
   $(widgetFile "list-entry")

@@ -22,12 +22,10 @@ $newline never
                     <span .glyphicon .glyphicon-remove>
                     \ _{MsgActionUnsubscribe}
                 \ #
-                $case role
-                  $of Receiver
-                  $of Sender
-                    <a href=@{SendMessageR listId} .btn-sm .btn .btn-primary type=button>
-                      <span .glyphicon .glyphicon-pencil>
-                      \ _{MsgActionSendMessage}
+                $with canSend <- role == Sender
+                  <a href=@{SendMessageR listId} :not canSend:.disabled .btn-sm .btn .btn-primary type=button>
+                    <span .glyphicon .glyphicon-pencil>
+                    \ _{MsgActionSendMessage}
               $nothing
                 <form .form-inline method=post action=@{SubscribeR listId}>
                   <button .btn-sm .btn .btn-success type=submit>

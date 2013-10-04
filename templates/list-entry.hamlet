@@ -1,6 +1,6 @@
 $newline never
 <div .btn-toolbar>
-  <a href=@{SendMessageR listId} .btn-sm .btn .btn-primary type=button>
+  <a href=@{SendMessageR listId} :not canSend:.disabled .btn-sm .btn .btn-primary type=button>
     <span .glyphicon .glyphicon-pencil>
     \ _{MsgActionSendMessage}
   <a href=@{ListR listId} .btn-sm .btn .btn-default type=button>
