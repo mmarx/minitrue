@@ -7,10 +7,15 @@ Register: Register
 
 NavSubscriptions: List subscriptions
 NavLists: Manage lists
+NavUsers: Manage users
 
+RoleNothing: n/a
 RoleConsumer: User
 RoleInnerCircle: Member of the Inner Circle™
 RoleAdmin: Administrator
+
+Verified: verified
+Unverified: unverified
 
 ListRoleNothing: not subscribed
 ListRoleReceiver: Subscriber
@@ -29,6 +34,9 @@ CreateListSuccess name@Text: List “#{name}” created.
 DeleteListFail: Could not delete list.
 DeleteListSuccess name@Text: List “#{name}” deleted.
 DeleteListConfirm name@Text: Really delete List “#{name}”?
+DeleteUserFail: Could not delete user.
+DeleteUserSuccess name@Text: User “#{name}” deleted.
+DeleteUserConfirm name@Text: Really delete User “#{name}”?
 SendMessage: Send message
 SendMessageFail: Could not send message.
 SendMessageSuccess subject@Text name@Text: Message “#{subject}” sent to “#{name}”.
@@ -41,20 +49,31 @@ SubjectField: Subject
 SubscriptionStatus: Status
 ListActions: Actions
 SubscriberActions: Actions
+UserActions: Actions
 SubscriberCount: Subscribers
 SenderCount: Authors
+Subscriptions: Subscriptions
 
+Users: Users
 EmailAddress: Email
 Role: Role
+UserRole: Role
+ChangeUserRole: Change role
+VerifiedStatus: Verification status
 PromoteSubscriber: Promote to Author
 DemoteSubscriber: Demote to Subscriber
+ConfirmChangeRole name@Text oldRole@Text role@Text: Really change role of “#{name}” from “#{oldRole}” to “#{role}”?
+ChangeRoleSuccess name@Text role@Text: Assigned role “#{role}” to “#{name}”.
+ChangeRoleFail name@Text: Could not change role of “#{name}”.
 
 ActionSubscribe: subscribe
 ActionUnsubscribe: unsubscribe
 ActionSendMessage: send message
 ActionEditList: edit list
 ActionDeleteList: delete list
+ActionDeleteUser: delete user
 
+ChangeRoleButton: Change role
 CancelButton: Cancel
 ResetButton: Reset
 SubmitButton: Submit

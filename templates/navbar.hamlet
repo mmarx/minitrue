@@ -16,6 +16,11 @@ $newline never
         $of Just Admin
           <li>
             <a href=@{ListsR}>_{MsgNavLists}
+          <li>
+            <a href=@{UsersR}>_{MsgNavUsers}
+        $of Just InnerCircle
+          <li>
+            <a href=@{ListsR}>_{MsgNavLists}
         $of _
     <ul .nav .navbar-nav .navbar-right>
       $maybe Entity _ auth <- mAuth

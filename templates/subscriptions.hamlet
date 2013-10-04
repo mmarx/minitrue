@@ -1,5 +1,5 @@
 $newline never
-<h1>Subscriptions
+<h1>_{MsgSubscriptions}
 <div .table-responsive>
   <table .table .table-striped>
     <thead>

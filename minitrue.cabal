@@ -21,6 +21,7 @@ library
                      Settings.Development
                      Handler.Home
                      Handler.List
+                     Handler.User
                      Handler.Subscriptions
                      Roles
                      Mail

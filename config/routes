@@ -14,3 +14,7 @@
 /list/#MailingListId/unsubscribe UnsubscribeR POST
 /list/#MailingListId/promote/#UserId PromoteR POST
 /list/#MailingListId/demote/#UserId DemoteR POST
+
+/user/ UsersR GET
+/user/#UserId/delete UserDeleteR POST
+/user/#UserId/role/#Role RoleR GET POST

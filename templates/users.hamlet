@@ -1,0 +1,31 @@
+$newline never
+<h1>_{MsgUsers}
+<div .table-responsive>
+  <table .table .table-striped>
+    <thead>
+      <th>_{MsgEmailAddress}
+      <th>_{MsgVerifiedStatus}
+      <th>_{MsgUserRole}
+      <th>_{MsgUserActions}
+    <tbody>
+      $forall (userId, user, mRole) <- users
+        <tr>
+          <td>#{userEmail user}
+          <td>
+            $if userVerified user
+              _{MsgVerified}
+            $else
+              _{MsgUnverified}
+          <td>
+            <a name=#{anchor userId}>
+            $if authId == userId
+              _{mRole}
+            $else
+              <div .btn-group>
+                <button type=button .btn .btn-default .dropdown-toggle data-toggle=dropdown>
+                  _{mRole} <span class=caret></span>
+                <ul .dropdown-menu role=menu>
+                  $forall role <- enumFrom Consumer
+                    <li>
+                      <a href=@{RoleR userId role}>_{role}
+          <td>^{userDeleteEntry (Entity userId user) deleteForm}

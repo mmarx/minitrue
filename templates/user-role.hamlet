@@ -1,0 +1,11 @@
+$newline never
+<h1>_{MsgChangeUserRole}
+<form action=@{RoleR userId role} method=post enctype=#{roleET}>
+  <p>
+    _{MsgConfirmChangeRole mail msgOldRole msgRole}
+  ^{roleWidget}
+  <div .btn-toolbar>
+    <a href=#{cancelR} type=button .btn .btn-default>
+      _{MsgCancelButton}
+    <button .btn .btn-primary type=submit>
+      _{MsgChangeRoleButton}

@@ -103,14 +103,17 @@ instance Yesod App where
     authRoute _ = Just $ AuthR LoginR
 
     isAuthorized HomeR _ = isLoggedIn
-    isAuthorized ListsR _ = isAdmin
+    isAuthorized ListsR _ = isInnerCircle
     isAuthorized (ListR listId) _ = canEditList listId
-    isAuthorized (ListDeleteR _) _ = isAdmin
+    isAuthorized (ListDeleteR _) _ = isInnerCircle
     isAuthorized (SendMessageR listId) _ = canSendToList listId
     isAuthorized (SubscribeR listId) _ = canSubscribeToList listId
     isAuthorized (UnsubscribeR listId) _ = canUnsubscribeFromList listId
     isAuthorized (PromoteR listId _) _ = canEditList listId
     isAuthorized (DemoteR listId _) _ = canEditList listId
+    isAuthorized (UsersR) _ = isAdmin
+    isAuthorized (UserDeleteR userId) _ = canDeleteUser userId
+    isAuthorized (RoleR userId role) _ = canSetRole userId role
 
     isAuthorized (StaticR _) _ = return Authorized
     isAuthorized (AuthR _) _ = return Authorized
@@ -235,6 +238,9 @@ instance RenderMessage App FormMessage where
     renderMessage _ _ = defaultFormMessage
 
 instance RenderMessage App Role where
+  renderMessage master langs = renderMessage master langs . roleMessage . Just
+
+instance RenderMessage App (Maybe Role) where
   renderMessage master langs = renderMessage master langs . roleMessage
 
 instance RenderMessage App ListRole where
@@ -243,10 +249,11 @@ instance RenderMessage App ListRole where
 instance RenderMessage App (Maybe ListRole) where
    renderMessage master langs = renderMessage master langs . listRoleMessage
 
-roleMessage :: Role -> AppMessage
-roleMessage Consumer = MsgRoleConsumer
-roleMessage InnerCircle = MsgRoleInnerCircle
-roleMessage Admin = MsgRoleAdmin
+roleMessage :: Maybe Role -> AppMessage
+roleMessage Nothing = MsgRoleNothing
+roleMessage (Just Consumer) = MsgRoleConsumer
+roleMessage (Just InnerCircle) = MsgRoleInnerCircle
+roleMessage (Just Admin) = MsgRoleAdmin
 
 listRoleMessage :: Maybe ListRole -> AppMessage
 listRoleMessage Nothing = MsgListRoleNothing
@@ -286,12 +293,21 @@ isAdmin = do
     Nothing -> return AuthenticationRequired
     _ -> return $ Unauthorized "Must be an Admin."
 
+isInnerCircle :: Handler AuthResult
+isInnerCircle = do
+  role <- getUserRole
+  case role of
+    Just Admin -> return Authorized
+    Just InnerCircle -> return Authorized
+    Nothing -> return AuthenticationRequired
+    _ -> return $ Unauthorized "Must be a Member of the Inner Circle™."
+
 canEditList :: MailingListId -> Handler AuthResult
 canEditList listId = do
   role <- getListUserRole listId
   case role of
     Just Sender -> return Authorized
-    _ -> isAdmin
+    _ -> isInnerCircle
 
 canSendToList :: MailingListId -> Handler AuthResult
 canSendToList listId = do
@@ -305,6 +321,26 @@ canSubscribeToList _ = return Authorized
 
 canUnsubscribeFromList :: MailingListId -> Handler AuthResult
 canUnsubscribeFromList _ = return Authorized
+
+canDeleteUser :: UserId -> Handler AuthResult
+canDeleteUser userId = do
+ mAuthId <- maybeAuthId
+ case mAuthId of
+   Just uId ->
+     if userId == uId
+       then return $ Unauthorized "Can't delete yourself."
+       else isAdmin
+   Nothing -> return AuthenticationRequired
+
+canSetRole :: UserId -> Role -> Handler AuthResult
+canSetRole userId _ = do
+  mAuthId <- maybeAuthId
+  case mAuthId of
+    Just uId ->
+      if userId == uId
+        then return $ Unauthorized "Can't change your own role."
+        else isAdmin
+    Nothing -> return AuthenticationRequired
 
 -- Note: previous versions of the scaffolding included a deliver function to
 -- send emails. Unfortunately, there are too many different options for us to
