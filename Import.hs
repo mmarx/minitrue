@@ -4,7 +4,10 @@ module Import
 
 import           Prelude              as Import hiding (head, init, last,
                                                  readFile, tail, writeFile)
-import           Yesod                as Import hiding (Route (..))
+import           Yesod                as Import hiding ( Route (..)
+                                                       , fieldSettingsLabel
+                                                       , renderBootstrap
+                                                       )
 import           Yesod.Auth           as Import (maybeAuth, maybeAuthId, requireAuth, requireAuthId)
 import           Control.Applicative  as Import (pure, (<$>), (<*>))
 import           Control.Arrow        as Import ((***), (>>>), (&&&))
@@ -17,6 +20,7 @@ import           Mail                 as Import
 import           Settings             as Import
 import           Settings.Development as Import
 import           Settings.StaticFiles as Import
+import           Bootstrap            as Import
 
 #if __GLASGOW_HASKELL__ >= 704
 import           Data.Monoid          as Import

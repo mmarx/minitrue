@@ -26,6 +26,7 @@ library
                      Roles
                      Mail
                      ListMail
+                     Bootstrap
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT
