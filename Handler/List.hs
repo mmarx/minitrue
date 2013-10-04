@@ -76,6 +76,7 @@ getSendMessageR listId = do
   Entity userId user <- requireAuth
   list <- runDB $ get404 listId
   (msgWidget, msgET) <- generateFormPost $ messageForm Nothing
+  cancelR <- routeAnchor ListsR listId
   defaultLayout $ do
     $(widgetFile "send-message")
 
