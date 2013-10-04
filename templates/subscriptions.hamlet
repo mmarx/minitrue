@@ -15,27 +15,25 @@ $newline never
           <td>
               _{mRole}
           <td>
-            <ul .list-inline>
+            <div .btn-toolbar>
               $maybe role <- mRole
-                <li>
-                  <form .form-inline method=post action=@{UnsubscribeR listId}>
-                    <button .btn-xs .btn .btn-danger type=submit>
-                      <span .glyphicon .glyphicon-remove>
-                      \ _{MsgActionUnsubscribe}
+                <form .form-inline method=post action=@{UnsubscribeR listId}>
+                  <button .btn-sm .btn .btn-danger type=submit>
+                    <span .glyphicon .glyphicon-remove>
+                    \ _{MsgActionUnsubscribe}
+                \ #
                 $case role
                   $of Receiver
                   $of Sender
-                    <li>
-                      <a href=@{SendMessageR listId} .btn-xs .btn .btn-primary type=button>
-                        <span .glyphicon .glyphicon-pencil>
-                        \ _{MsgActionSendMessage}
+                    <a href=@{SendMessageR listId} .btn-sm .btn .btn-primary type=button>
+                      <span .glyphicon .glyphicon-pencil>
+                      \ _{MsgActionSendMessage}
               $nothing
-                <li>
-                  <form .form-inline method=post action=@{SubscribeR listId}>
-                    <button .btn-xs .btn .btn-success type=submit>
-                      <span .glyphicon .glyphicon-ok>
-                      \ _{MsgActionSubscribe}
-              <li>
-                <a href=@{ListR listId} .btn-xs .btn .btn-default type=button>
-                 <span .glyphicon .glyphicon-wrench>
-                 \ _{MsgActionEditList}
+                <form .form-inline method=post action=@{SubscribeR listId}>
+                  <button .btn-sm .btn .btn-success type=submit>
+                    <span .glyphicon .glyphicon-ok>
+                    \ _{MsgActionSubscribe}
+                \ #
+              <a href=@{ListR listId} .btn-sm .btn .btn-default type=button>
+               <span .glyphicon .glyphicon-wrench>
+               \ _{MsgActionEditList}

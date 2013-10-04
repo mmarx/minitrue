@@ -1,9 +1,8 @@
 $newline never
-<ul .list-inline>
-  <li>
-    <a href=##{modalId} .btn-xs .btn .btn-danger type=button data-toggle=modal>
-      <span .glyphicon .glyphicon-trash>
-      \ _{MsgActionDeleteUser}
+<div .btn-toolbar>
+  <a href=##{modalId} .btn-sm .btn .btn-danger type=button data-toggle=modal>
+    <span .glyphicon .glyphicon-trash>
+    \ _{MsgActionDeleteUser}
 <div ##{modalId} .modal .fade tabindex=-1 role=dialog aria-labelledby=#{labelId} aria-hidden=true>
   <div .modal-dialog>
     <div .modal-content>

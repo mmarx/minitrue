@@ -18,7 +18,9 @@ $newline never
             <td>#{mailingListDescription lst}
             <td>#{subscribers}
             <td>#{authors}
-            <td>^{listEntry list deleteForm}
+            <td>
+              <a name=#{anchor $ entityKey list}>
+              ^{listEntry list deleteForm}
 
 <h2>_{MsgNewList}
 ^{listEditor Nothing}

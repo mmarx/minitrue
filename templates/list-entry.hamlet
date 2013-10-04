@@ -1,17 +1,14 @@
 $newline never
-<ul .list-inline>
-  <li>
-    <a href=@{SendMessageR listId} .btn-xs .btn .btn-primary type=button>
-      <span .glyphicon .glyphicon-pencil>
-      \ _{MsgActionSendMessage}
-  <li>
-    <a href=@{ListR listId} .btn-xs .btn .btn-default type=button>
-      <span .glyphicon .glyphicon-wrench>
-      \ _{MsgActionEditList}
-  <li>
-    <a href=##{modalId} .btn-xs .btn .btn-danger type=button data-toggle=modal>
-      <span .glyphicon .glyphicon-trash>
-      \ _{MsgActionDeleteList}
+<div .btn-toolbar>
+  <a href=@{SendMessageR listId} .btn-sm .btn .btn-primary type=button>
+    <span .glyphicon .glyphicon-pencil>
+    \ _{MsgActionSendMessage}
+  <a href=@{ListR listId} .btn-sm .btn .btn-default type=button>
+    <span .glyphicon .glyphicon-wrench>
+    \ _{MsgActionEditList}
+  <a href=##{modalId} .btn-sm .btn .btn-danger type=button data-toggle=modal>
+    <span .glyphicon .glyphicon-trash>
+    \ _{MsgActionDeleteList}
 <div ##{modalId} .modal .fade tabindex=-1 role=dialog aria-labelledby=#{labelId} aria-hidden=true>
   <div .modal-dialog>
     <div .modal-content>

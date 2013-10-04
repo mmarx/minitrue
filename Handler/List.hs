@@ -142,4 +142,5 @@ messageForm mMsg = renderBootstrap $ Message
                    <$> areq textField subjectS (messageSubject <$> mMsg)
                    <*> areq textareaField bodyS (messageBody <$> mMsg)
   where subjectS = fieldSettingsLabel MsgSubjectField
-        bodyS = fieldSettingsLabel MsgBodyField
+        bodyS' = fieldSettingsLabel MsgBodyField :: FieldSettings App
+        bodyS = bodyS' { fsAttrs = fsAttrs bodyS' ++ [("rows", "15")] }
