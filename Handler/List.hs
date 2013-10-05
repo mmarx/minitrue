@@ -137,9 +137,9 @@ listDeleteForm extra = do
 
 listEditor :: Maybe (MailingListId, MailingList) -> Widget
 listEditor mIL = do
-  let editAction = case mIL of
-        Nothing -> ListsR
-        Just (lId, _) -> ListR lId
+  let (editAction, msgSubmitButton) = case mIL of
+        Nothing -> (ListsR, MsgNewListButton)
+        Just (lId, _) -> (ListR lId, MsgEditListButton)
   (editWidget, editET) <- handlerToWidget . generateFormPost . listForm $ snd <$> mIL
   $(widgetFile "list-edit")
 

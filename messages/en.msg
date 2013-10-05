@@ -79,6 +79,9 @@ ResetButton: Reset
 SubmitButton: Submit
 DeleteButton: Delete
 LogoutButton: Logout
+SendMessageButton: Send
+NewListButton: Add
+EditListButton: Update
 
 VerifyEmailSubject: minitrue: Verify your email address.
-VerifyEmailBody key@Text url@Text: URL: #{url}\nkey: #{key}
+VerifyEmailBody key@Text url@Text: To verify our email address, visit #{url}.

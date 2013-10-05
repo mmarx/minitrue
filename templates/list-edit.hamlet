@@ -3,4 +3,4 @@ $newline never
   ^{editWidget}
   <div .btn-toolbar>
     <button .btn .btn-default type=reset>_{MsgResetButton}
-    <button .btn .btn-primary type=submit>_{MsgSubmitButton}
+    <button .btn .btn-primary type=submit>_{msgSubmitButton}

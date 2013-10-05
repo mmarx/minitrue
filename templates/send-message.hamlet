@@ -9,4 +9,4 @@ $newline never
   ^{msgWidget}
   <div .btn-toolbar>
     <a href=#{cancelR} .btn .btn-default type=button>_{MsgCancelButton}
-    <button .btn .btn-primary type=submit>_{MsgSubmitButton}
+    <button .btn .btn-primary type=submit>_{MsgSendMessageButton}
