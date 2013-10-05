@@ -173,7 +173,7 @@ instance YesodAuth App where
 instance YesodAuthEmail App where
   type AuthEmailId App = UserId
 
-  afterPasswordRoute _ = ListsR
+  afterPasswordRoute _ = HomeR
   addUnverified email verkey = runDB $ insert $
                                User email Nothing (Just verkey) False
 
