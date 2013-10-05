@@ -1,4 +1,3 @@
-Hello: Hello
 Login: Login
 Logout: Logout
 LoggedInAs name@Text: Logged in as “#{name}”
