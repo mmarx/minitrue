@@ -34,8 +34,10 @@ data AuthMessage = MsgResetButton
                  | MsgCurrentPassword
 
 instance YesodAuthEmail master => RenderMessage master AuthMessage where
-  renderMessage _ ("en":_) msg = renderEnglish msg
-  renderMessage _ _ msg = renderDefault msg
+  renderMessage _ ("en":_) = renderEnglish
+  renderMessage _ ("de":_) = renderGerman
+  renderMessage master (_:langs) = renderMessage master langs
+  renderMessage _ _ = renderDefault
 
 renderDefault :: AuthMessage -> Text
 renderDefault = renderEnglish
@@ -46,6 +48,13 @@ renderEnglish MsgLoginButton = "Login"
 renderEnglish MsgRegisterButton = "Register"
 renderEnglish MsgForgotButton = "Recover forgotten password"
 renderEnglish MsgCurrentPassword = "Current password"
+
+renderGerman :: AuthMessage -> Text
+renderGerman MsgResetButton = "Zurücksetzen"
+renderGerman MsgLoginButton = "Einloggen"
+renderGerman MsgRegisterButton = "Registrieren"
+renderGerman MsgForgotButton = "Vergessenes Passwort zurücksetzen"
+renderGerman MsgCurrentPassword = "Aktuelles Passwort"
 
 origAuth :: YesodAuthEmail master => AuthPlugin master
 origAuth = AE.authEmail

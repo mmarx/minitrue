@@ -174,6 +174,7 @@ instance YesodAuth App where
     redirectToReferer _ = False
 
     renderAuthMessage _ ("en":_) = AuthMessage.englishMessage
+    renderAuthMessage _ ("de":_) = AuthMessage.germanMessage
     renderAuthMessage master (_:langs) = renderAuthMessage master langs
     renderAuthMessage _ _ = AuthMessage.defaultMessage
 
