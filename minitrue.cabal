@@ -27,6 +27,7 @@ library
                      Mail
                      ListMail
                      Bootstrap
+                     Auth
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT

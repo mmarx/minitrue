@@ -1,0 +1,11 @@
+$newline never
+<h1>_{Msg.RegisterLong}
+<form method=post action=@{toParent registerR}>
+  <div .form-group>
+    <label for=#{email}>_{Msg.Email}
+    <input ##{email} .form-control name=email type=email required autofocus>
+  <div .btn-toolbar>
+    <button .btn .btn-default type=reset>_{MsgResetButton}
+    <button .btn .btn-primary type=submit>
+      <span .glyphicon .glyphicon-user>
+      \ _{MsgRegisterButton}

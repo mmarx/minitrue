@@ -8,7 +8,7 @@ import qualified Data.Text as T
 import Yesod
 import Yesod.Static
 import Yesod.Auth
-import Yesod.Auth.Email
+import Yesod.Auth.Message (AuthMessage (ConfirmationEmailSent))
 import Yesod.Default.Config
 import Yesod.Default.Util (addStaticContentExternal)
 import Network.HTTP.Conduit (Manager)
@@ -22,6 +22,7 @@ import Settings (widgetFile, Extra (..), mailHost, mailSenderAddress)
 import Model
 import Roles
 import Mail
+import Auth
 import Text.Jasmine (minifym)
 import Text.Hamlet (hamletFile)
 import Text.Shakespeare.Text (lt)
@@ -221,6 +222,10 @@ instance YesodAuthEmail App where
     case T.compareLength pwd 8 of
       LT -> return $ Left "Password must be at least 8 characters long."
       _ -> return $ Right ()
+
+  confirmationEmailSentResponse mail = defaultLayout $ do
+    setMessageI $ ConfirmationEmailSent mail
+    redirect HomeR
 
   -- for yesod-auth-1.2.3+
   -- normalizeEmailAddress = T.toLower

@@ -1,0 +1,13 @@
+$newline never
+<h1>_{Msg.LoginTitle}
+<form method=post action=@{toMaster loginR}>
+  <div .form-group>
+    <label for=#{email}>_{Msg.Email}
+    <input ##{email} .form-control name=email type=email required autofocus>
+  <div .form-group>
+    <label for=#{pwd}>_{Msg.Password}
+    <input ##{pwd} .form-control name=password type=password required>
+  <div .btn-toolbar>
+    <button .btn .btn-default type=reset>_{MsgResetButton}
+    <button .btn .btn-primary type=submit>_{MsgLoginButton}
+    <a href=@{toMaster forgotPasswordR} .btn .btn-info type=button>_{MsgForgotButton}
