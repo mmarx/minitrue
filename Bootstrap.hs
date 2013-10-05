@@ -17,12 +17,10 @@ renderBootstrap :: Monad m => FormRender m a
 renderBootstrap aform fragment = do
   (res, views') <- aFormToForm aform
   let views = views' []
-      has (Just _) = True
-      has Nothing = False
-  let widget = [whamlet|$newline never
+      widget = [whamlet|$newline never
                 \#{fragment}
                 $forall view <- views
-                  \ <div .form-group :has $ fvErrors view:.has-error>
+                  \ <div .form-group :isJust $ fvErrors view:.has-error>
                     <label for=#{fvId view}>#{fvLabel view}
                     ^{fvInput view}
                     $maybe tt <- fvTooltip view
