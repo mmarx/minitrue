@@ -116,6 +116,7 @@ instance Yesod App where
     isAuthorized (UsersR) _ = isAdmin
     isAuthorized (UserDeleteR userId) _ = canDeleteUser userId
     isAuthorized (RoleR userId role) _ = canSetRole userId role
+    isAuthorized (UnsubscribeDirectlyR _ _) _ = return Authorized
 
     isAuthorized (StaticR _) _ = return Authorized
     isAuthorized (AuthR _) _ = return Authorized

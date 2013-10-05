@@ -1,0 +1,15 @@
+$newline never
+$with name <- mailingListName list
+  <div .page-header>
+    <h1>
+      _{MsgUnsubscribe}
+      \ <small>
+        _{MsgList $ mailingListName list}
+
+  <p>_{MsgUnsubscribeConfirm name}
+
+<form action=@{UnsubscribeDirectlyR listId key} method=post>
+  <div .btn-toolbar>
+    <a href=@{HomeR} .btn .btn-default type=button>_{MsgCancelButton}
+    \ #
+    <button .btn .btn-danger type=submit>_{MsgUnsubscribeButton}

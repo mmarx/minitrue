@@ -82,6 +82,12 @@ LogoutButton: Abmelden
 SendMessageButton: Absenden
 NewListButton: Hinzufügen
 EditListButton: Aktualisieren
+UnsubscribeButton: Austragen
+
+UnsubscribeFail name: Ungültiger Schlüssel — Sie konnten nicht aus der Mailingliste „#{name}“ ausgetragen werden.
+UnsubscribeSuccess name: Sie wurden aus der Mailingliste „#{name}“ ausgetragen.
+Unsubscribe: Mailingliste abbestellen
+UnsubscribeConfirm name: Wollen Sie sich wirklich aus der Mailingliste „#{name}“ austragen?
 
 VerifyEmailSubject: minitrue: Verifizieren Sie ihre Mailadresse
 VerifyEmailBody key url: Um ihre Mailadresse zu verifizieren, besuchen Sie #{url}.

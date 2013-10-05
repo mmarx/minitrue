@@ -17,6 +17,8 @@ MailingListUser
     user UserId
     list MailingListId
     role ListRole
+    unsubkey Text
     UniqueListUser user list
+    UniqueUnsubscribe unsubkey list
 
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)

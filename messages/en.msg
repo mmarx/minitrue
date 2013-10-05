@@ -82,6 +82,13 @@ LogoutButton: Logout
 SendMessageButton: Send
 NewListButton: Add
 EditListButton: Update
+UnsubscribeButton: Unsubscribe
+
+UnsubscribeFail name@Text: Incorrect key, could not unsubscribe from list “#{name}”.
+UnsubscribeSuccess name@Text: You have been unsubscribed from the list “#{name}”.
+SubscribeSuccess name@Text: You have subscribed to the list “#{name}”.
+Unsubscribe: Unsubscribe
+UnsubscribeConfirm name@Text: Do you really want to unsubscribe from the list “#{name}”?
 
 VerifyEmailSubject: minitrue: Verify your email address.
 VerifyEmailBody key@Text url@Text: To verify our email address, visit #{url}.
