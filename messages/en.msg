@@ -8,7 +8,7 @@ NavSubscriptions: List subscriptions
 NavLists: Manage lists
 NavUsers: Manage users
 
-RoleNothing: n/a
+RoleNothing: (none)
 RoleConsumer: User
 RoleInnerCircle: Member of the Inner Circle™
 RoleAdmin: Administrator
