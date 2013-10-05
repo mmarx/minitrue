@@ -171,6 +171,7 @@ instance YesodAuth App where
 
     authHttpManager = error "No HTTP manager neccessary."
 
+    redirectToReferer _ = False
 instance YesodAuthEmail App where
   type AuthEmailId App = UserId
 
