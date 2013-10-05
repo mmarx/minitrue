@@ -8,7 +8,7 @@ import qualified Data.Text as T
 import Yesod
 import Yesod.Static
 import Yesod.Auth
-import Yesod.Auth.Message (AuthMessage (ConfirmationEmailSent))
+import qualified Yesod.Auth.Message as AuthMessage
 import Yesod.Default.Config
 import Yesod.Default.Util (addStaticContentExternal)
 import Network.HTTP.Conduit (Manager)
@@ -172,6 +172,11 @@ instance YesodAuth App where
     authHttpManager = error "No HTTP manager neccessary."
 
     redirectToReferer _ = False
+
+    renderAuthMessage _ ("en":_) = AuthMessage.englishMessage
+    renderAuthMessage master (_:langs) = renderAuthMessage master langs
+    renderAuthMessage _ _ = AuthMessage.defaultMessage
+
 instance YesodAuthEmail App where
   type AuthEmailId App = UserId
 
@@ -225,7 +230,7 @@ instance YesodAuthEmail App where
       _ -> return $ Right ()
 
   confirmationEmailSentResponse mail = defaultLayout $ do
-    setMessageI $ ConfirmationEmailSent mail
+    setMessageI $ AuthMessage.ConfirmationEmailSent mail
     redirect HomeR
 
   -- for yesod-auth-1.2.3+
