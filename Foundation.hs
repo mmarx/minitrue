@@ -195,7 +195,7 @@ instance YesodAuthEmail App where
         subject = renderMsg MsgVerifyEmailSubject
         body = renderMsg $ MsgVerifyEmailBody verkey verurl
         body' = MailBody { plainBody = [lt|#{T.replace "\\n" "\n" body}|]
-                         , htmlBody = [shamlet|#{T.replace "\\n" "<br>" body}|]
+                         , htmlBody = [shamlet|#{preEscapedToHtml $ T.replace "\\n" "<br>" body}|]
                          }
     sendMail $ mailFromTo sender receiver subject body'
 
