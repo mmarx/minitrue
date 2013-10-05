@@ -65,6 +65,7 @@ DemoteSubscriber: Demote to Subscriber
 ConfirmChangeRole name@Text oldRole@Text role@Text: Really change role of “#{name}” from “#{oldRole}” to “#{role}”?
 ChangeRoleSuccess name@Text role@Text: Assigned role “#{role}” to “#{name}”.
 ChangeRoleFail name@Text: Could not change role of “#{name}”.
+ConfirmLogout: Really log out?
 
 ActionSubscribe: subscribe
 ActionUnsubscribe: unsubscribe
@@ -78,6 +79,7 @@ CancelButton: Cancel
 ResetButton: Reset
 SubmitButton: Submit
 DeleteButton: Delete
+LogoutButton: Logout
 
 VerifyEmailSubject: minitrue: Verify your email address.
 VerifyEmailBody key@Text url@Text: URL: #{url}\nkey: #{key}

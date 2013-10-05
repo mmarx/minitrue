@@ -72,6 +72,8 @@ instance Yesod App where
         renderMsg <- getMessageRender :: Handler (AppMessage -> Text)
         mAuth <- maybeAuth
         mRole <- getUserRole
+        modalId <- newIdent
+        labelId <- newIdent
         navbar <- widgetToPageContent $(widgetFile "navbar")
 
         -- We break up the default layout into two components:

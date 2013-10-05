@@ -26,15 +26,31 @@ $newline never
       $maybe Entity _ auth <- mAuth
         <li .dropdown>
           <a href=# .dropdown-toggle data-toggle=dropdown>
-            _{MsgLoggedInAs $ userEmail auth}
+            <span .glyphicon .glyphicon-user>
+            \ _{MsgLoggedInAs $ userEmail auth}
             <b .caret>
           <ul .dropdown-menu>
             <li>
               <a href=@{AuthR setpassR}>_{MsgSetPassword}
             <li>
-              <a href=@{AuthR LogoutR}>_{MsgLogout}
+              <a href=##{modalId} data-toggle=modal>_{MsgLogout}
       $nothing
         <li>
           <a href=@{AuthR LoginR}>_{MsgLogin}
         <li>
           <a href=@{AuthR registerR}>_{MsgRegister}
+<div ##{modalId} .modal .fade tabindex=-1 role=dialog aria-labelledby=#{labelId} aria-hidden-true>
+  <div .modal-dialog>
+    <div .modal-content>
+      <div .modal-header>
+        <button type=button .close data-dismiss=modal aria-hidden=true>&times;
+        <h3 ##{labelId}>_{MsgLogout}
+      <div .modal-body>
+        <p>_{MsgConfirmLogout}
+      <div .modal-footer>
+        <form .form-inline action=@{AuthR LogoutR} method=post>
+          <div .btn-toolbar>
+            <button .btn .btn-default data-dismiss=modal type=button>
+              _{MsgCancelButton}
+            <button .btn .btn-danger type=submit>
+              _{MsgLogoutButton}
