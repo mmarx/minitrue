@@ -51,7 +51,7 @@ renderEnglish MsgCurrentPassword = "Current password"
 
 renderGerman :: AuthMessage -> Text
 renderGerman MsgResetButton = "Zurücksetzen"
-renderGerman MsgLoginButton = "Einloggen"
+renderGerman MsgLoginButton = "Anmelden"
 renderGerman MsgRegisterButton = "Registrieren"
 renderGerman MsgForgotButton = "Vergessenes Passwort zurücksetzen"
 renderGerman MsgCurrentPassword = "Aktuelles Passwort"

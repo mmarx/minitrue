@@ -174,9 +174,13 @@ instance YesodAuth App where
     redirectToReferer _ = False
 
     renderAuthMessage _ ("en":_) = AuthMessage.englishMessage
-    renderAuthMessage _ ("de":_) = AuthMessage.germanMessage
+    renderAuthMessage _ ("de":_) = germanAuthMessage
     renderAuthMessage master (_:langs) = renderAuthMessage master langs
     renderAuthMessage _ _ = AuthMessage.defaultMessage
+
+germanAuthMessage :: AuthMessage.AuthMessage -> Text
+germanAuthMessage AuthMessage.LoginTitle = "Anmelden"
+germanAuthMessage msg = AuthMessage.germanMessage msg
 
 instance YesodAuthEmail App where
   type AuthEmailId App = UserId
