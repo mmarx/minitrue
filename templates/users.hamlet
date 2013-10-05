@@ -25,7 +25,7 @@ $newline never
                 <button type=button .btn-sm .btn .btn-default .dropdown-toggle data-toggle=dropdown>
                   _{mRole} <span class=caret></span>
                 <ul .dropdown-menu role=menu>
-                  $forall role <- enumFrom Consumer
+                  $forall role <- enumFrom minBound
                     <li>
                       <a href=@{RoleR userId role}>_{role}
           <td>^{userDeleteEntry (Entity userId user) deleteForm}

@@ -5,6 +5,7 @@ import Prelude ( Maybe (..)
                , Show
                , Enum
                , Eq
+               , Bounded
                , read
                , show
                , (.)
@@ -13,9 +14,9 @@ import Database.Persist.TH
 import Yesod.Core.Dispatch (PathPiece (..))
 
 data Role = Consumer | InnerCircle | Admin
-          deriving (Read, Show, Eq, Enum)
+          deriving (Read, Show, Eq, Enum, Bounded)
 data ListRole = Receiver | Sender
-              deriving (Read, Show, Eq, Enum)
+              deriving (Read, Show, Eq, Enum, Bounded)
 
 derivePersistField "Role"
 derivePersistField "ListRole"
