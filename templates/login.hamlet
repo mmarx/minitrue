@@ -10,4 +10,5 @@ $newline never
   <div .btn-toolbar>
     <button .btn .btn-default type=reset>_{MsgResetButton}
     <button .btn .btn-primary type=submit>_{MsgLoginButton}
+    <a href=@{toMaster registerR} .btn .btn-default type=button>_{MsgRegisterButton}
     <a href=@{toMaster forgotPasswordR} .btn .btn-info type=button>_{MsgForgotButton}
