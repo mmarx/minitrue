@@ -32,6 +32,6 @@ $newline never
                     <span .glyphicon .glyphicon-ok>
                     \ _{MsgActionSubscribe}
                 \ #
-              <a href=@{ListR listId} .btn-sm .btn .btn-default type=button>
+              <a href=@{ListR listId} :not $ canEdit mRole:.disabled .btn-sm .btn .btn-default type=button>
                <span .glyphicon .glyphicon-wrench>
                \ _{MsgActionEditList}
