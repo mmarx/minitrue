@@ -25,6 +25,6 @@ Archive
     list MailingListId
     subject Text
     body Text
-    timestamp TimeOfDay default=CURRENT_TIME
+    timestamp UTCTime
 
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)
