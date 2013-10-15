@@ -24,7 +24,7 @@ Archive
     author UserId
     list MailingListId
     subject Text
-    body Text
+    body Textarea
     timestamp UTCTime
 
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)

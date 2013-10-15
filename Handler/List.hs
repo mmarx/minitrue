@@ -3,6 +3,8 @@ module Handler.List where
 import Import
 import ListMail
 
+import Data.Time (getCurrentTime)
+
 getListsR :: Handler Html
 getListsR = do
   lists <- runDB $ selectList [] [Asc MailingListName]
@@ -82,11 +84,16 @@ getSendMessageR listId = do
 
 postSendMessageR :: MailingListId -> Handler Html
 postSendMessageR listId = do
+  authId <- requireAuthId
+  time <- lift getCurrentTime
   list <- runDB $ get404 listId
   ((msgResult, _), _) <- runFormPost . messageForm $ Nothing
 
   case msgResult of
     FormSuccess msg -> do
+      let subject = messageSubject msg
+          body = messageBody msg
+      _ <- runDB $ insert $ Archive authId listId subject body time
       sendMessageToList msg listId
       setMessageI $ MsgSendMessageSuccess (messageSubject msg) $ mailingListName list
       redirect HomeR
