@@ -5,6 +5,7 @@ import Yesod
 import Data.Text (Text, concat)
 import Database.Persist.Quasi
 import Data.Typeable (Typeable)
+import Data.Time
 
 import Roles
 

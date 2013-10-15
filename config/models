@@ -20,5 +20,11 @@ MailingListUser
     unsubkey Text
     UniqueListUser user list
     UniqueUnsubscribe unsubkey list
+Archive
+    author UserId
+    list MailingListId
+    subject Text
+    body Text
+    timestamp TimeOfDay default=CURRENT_TIME
 
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)
