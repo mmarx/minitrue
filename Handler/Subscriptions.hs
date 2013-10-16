@@ -1,6 +1,7 @@
 module Handler.Subscriptions where
 
 import Import
+import ListMail
 import Data.Text (pack)
 import System.Random (newStdGen)
 import Network.Mail.Mime (randomString)
@@ -13,8 +14,22 @@ addSubscription userId listId = do
   list <- get404 listId
   master <- lift getYesod
   unsubkey <- liftIO $ randomKey master
-  _ <- insertBy $ MailingListUser userId listId Receiver unsubkey
+  let mlU = MailingListUser userId listId Receiver unsubkey
+  eMluId <- insertBy mlU
   lift $ setMessageI $ MsgSubscribeSuccess $ mailingListName list
+  case eMluId of
+    Left _ -> return () -- already subscribed
+    Right mluId -> do
+      archives <- selectList [ArchiveList ==. listId] [ Desc ArchiveTimestamp
+                                                     , LimitTo 1
+                                                     ]
+      case archives of
+        ((Entity _ arc):_) -> do
+          let msg = Message { messageSubject = archiveSubject arc
+                            , messageBody = archiveBody arc
+                            }
+          lift $ sendMessageToListUser msg listId (Entity mluId mlU)
+        [] -> return ()
   return ()
 
 delSubscription :: UserId -> MailingListId -> YesodDB App ()
