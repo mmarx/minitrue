@@ -13,13 +13,18 @@ canonicalizeListName = T.map canonicalize
           | otherwise = '-'
 
 sendMessageToList :: Message -> MailingListId -> Handler ()
-sendMessageToList msg listId = do
-  (list, addresses) <- runDB $ do
-    list <- get404 listId
-    addrs <- selectList [MailingListUserList ==. listId] [] >>= mapM address
-    return (list, addrs)
+sendMessageToList msg listId = runDB $ do
+  addrs <- selectList [MailingListUserList ==. listId] []
+  lift $ mapM_ (sendMessageToListUser msg listId) addrs
+
+sendMessageToListUser :: Message -> MailingListId -> Entity MailingListUser -> Handler ()
+sendMessageToListUser msg listId (Entity _ mLU) = do
   extra <- getExtra
   renderUrl <- getUrlRender
+  (user, list) <- runDB $ do
+    usr <- get404 $ mailingListUserUser mLU
+    lst <- get404 listId
+    return (usr, lst)
   let unsubscribeR key = renderUrl $ UnsubscribeDirectlyR listId key
       sender = mailSenderAddress extra
       subject = T.concat [ "["
@@ -40,8 +45,4 @@ sendMessageToList msg listId = do
       ad = Address Nothing
       message' (addr, key) = mailFromToList sender (ad addr) (unsubscribeR key) subject body
       message ak@(_, key) = sendMail $ addHeaders (headers key) $ message' ak
-
-  mapM_ message addresses
-  where address (Entity _ mLU) = do
-          user <- get404 $ mailingListUserUser mLU
-          return (userEmail user, mailingListUserUnsubkey mLU)
+  message (userEmail user, mailingListUserUnsubkey mLU)
