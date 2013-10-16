@@ -14,7 +14,11 @@ getHomeR = do
   lists <- runDB $ do
     ls <- selectList [] [Asc MailingListName]
     mapM (getStatus userId) ls
-  innerCircle <- isInnerCircle
-  let canEdit = maybe (innerCircle == Authorized) (==Sender)
+  innerCircle <- do
+    isIC <- isInnerCircle
+    return $ case isIC of
+      Authorized -> True
+      _ -> False
+  let canEdit mRole = innerCircle || (maybe False (==Sender) mRole)
   defaultLayout $ do
     $(widgetFile "subscriptions")
