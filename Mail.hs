@@ -30,10 +30,13 @@ wrapPlain :: Maybe Text -> Maybe Text -> LT.Text -> LT.Text
 wrapPlain mName mUnsub body = case mUnsub of
   Nothing -> wrapped
   Just unsub -> wrapped <> (sig unsub)
-  where name = maybe "" (cons ' ') mName
-        wrapped = [lt|Hi#{name},
+  where body' = case mName of
+          Nothing -> body
+          Just name -> [lt|Hi #{name},
 
 #{body}
+|]
+        wrapped = [lt|#{body'}
 
 -- #
 The Ministry of Truth.
@@ -49,8 +52,6 @@ $doctype 5
   <body>
     $maybe name <- mName
       <p>Hi #{name},
-    $nothing
-      <p>Hi,
     <p>#{body}
     <p><i>--The Ministry of Truth.</i>
     $maybe unsub <- mUnsub
