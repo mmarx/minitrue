@@ -92,5 +92,5 @@ mailFromTo' sender receiver mUnsub subject body = do
                 , htmlPart . renderHtml . htmlBody $ wrapped
                 ]
         name = addressName receiver
-        headers = [ ("User-Agent", "The Ministry of Truth (minitrue-0.0.1)")
+        headers = [ ("User-Agent", "The Ministry of Truth (minitrue-0.0.5)")
                   ]
