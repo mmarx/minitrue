@@ -1,6 +1,6 @@
 module ListMail where
 
-import Import
+import Import hiding (toLower)
 import Data.Char
 import qualified Data.Text as T
 
@@ -19,14 +19,14 @@ sendMessageToList msg listId = runDB $ do
 
 sendMessageToListUser :: Message -> MailingListId -> Entity MailingListUser -> Handler ()
 sendMessageToListUser msg listId (Entity _ mLU) = do
-  extra <- getExtra
+  settings <- appSettings <$> getYesod
   renderUrl <- getUrlRender
   (user, list) <- runDB $ do
     usr <- get404 $ mailingListUserUser mLU
     lst <- get404 listId
     return (usr, lst)
   let unsubscribeR key = renderUrl $ UnsubscribeDirectlyR listId key
-      sender = mailSenderAddress extra
+      sender = mailSenderAddress settings
       subject = T.concat [ "["
                          , mailingListName list
                          , "] "
@@ -36,7 +36,7 @@ sendMessageToListUser msg listId (Entity _ mLU) = do
       listid = T.concat [ "<"
                         , canonicalizeListName $ mailingListName list
                         , ".minitrue."
-                        , extraMailListIdSuffix extra
+                        , appMailListIdSuffix settings
                         , ">"
                         ]
       headers key = [ ("List-Id", listid)

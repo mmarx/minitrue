@@ -2,7 +2,6 @@ module Handler.Subscriptions where
 
 import Import
 import ListMail
-import Data.Text (pack)
 import System.Random (newStdGen)
 import Network.Mail.Mime (randomString)
 

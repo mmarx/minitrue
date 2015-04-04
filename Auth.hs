@@ -11,6 +11,7 @@ module Auth ( authEmail
             ) where
 
 import Prelude hiding (head, init, last, readFile, tail, writeFile)
+import Control.Monad (void)
 import Data.Text (Text)
 import Yesod.Auth
 import Yesod.Auth.Email ( YesodAuthEmail (..)
@@ -68,7 +69,7 @@ login toMaster = do
   pwd <- newIdent
   $(widgetFile "login")
 
-dispatch :: YesodAuthEmail master => Text -> [Text] -> AuthHandler master ()
+dispatch :: YesodAuthEmail master => Text -> [Text] -> AuthHandler master TypedContent
 dispatch "GET" ["register"] = getRegisterR >>= sendResponse
 dispatch "GET" ["forgot-password"] = getForgotPasswordR >>= sendResponse
 dispatch "GET" ["set-password"] = getPasswordR >>= sendResponse
@@ -96,7 +97,7 @@ getPasswordR = do
   mAuthId <- lift maybeAuthId
   case mAuthId of
     Just _ -> return ()
-    Nothing -> loginErrorMessageI LoginR Msg.BadSetPass
+    Nothing -> void $ loginErrorMessageI LoginR Msg.BadSetPass
   pwdCur <- newIdent
   pwdNew <- newIdent
   pwdCon <- newIdent

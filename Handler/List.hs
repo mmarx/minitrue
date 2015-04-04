@@ -3,7 +3,7 @@ module Handler.List where
 import Import
 import ListMail
 
-import Data.Time (getCurrentTime)
+import Yesod.Form.Bootstrap3
 
 getListsR :: Handler Html
 getListsR = do
@@ -128,11 +128,9 @@ listEntry (Entity listId list) (deleteWidget, deleteET) = do
   $(widgetFile "list-entry")
 
 listForm :: Maybe MailingList -> Form MailingList
-listForm mList = renderBootstrap $ MailingList
-                 <$> areq textField nameS (mailingListName <$> mList)
-                 <*> areq textField descS (mailingListDescription <$> mList)
-  where nameS = fieldSettingsLabel MsgNameField
-        descS = fieldSettingsLabel MsgDescField
+listForm mList = renderBootstrap3 BootstrapBasicForm $ MailingList
+                 <$> areq textField (bfs MsgNameField) (mailingListName <$> mList)
+                 <*> areq textField (bfs MsgDescField) (mailingListDescription <$> mList)
 
 listDeleteForm :: Html -> MForm Handler (FormResult Text, Widget)
 listDeleteForm extra = do
@@ -151,9 +149,8 @@ listEditor mIL = do
   $(widgetFile "list-edit")
 
 messageForm :: Maybe Message -> Form Message
-messageForm mMsg = renderBootstrap $ Message
-                   <$> areq textField subjectS (messageSubject <$> mMsg)
+messageForm mMsg = renderBootstrap3 BootstrapBasicForm $ Message
+                   <$> areq textField (bfs MsgSubjectField) (messageSubject <$> mMsg)
                    <*> areq textareaField bodyS (messageBody <$> mMsg)
-  where subjectS = fieldSettingsLabel MsgSubjectField
-        bodyS' = fieldSettingsLabel MsgBodyField :: FieldSettings App
+  where bodyS' = fieldSettingsLabel MsgBodyField :: FieldSettings App
         bodyS = bodyS' { fsAttrs = fsAttrs bodyS' ++ [("rows", "15")] }

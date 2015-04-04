@@ -1,46 +1,33 @@
 module Foundation where
 
-import Prelude
-import Control.Monad (join)
-import Data.Maybe (isJust)
-import Data.Text (Text)
-import qualified Data.Text as T
-import Yesod
-import Yesod.Static
-import Yesod.Auth
-import qualified Yesod.Auth.Message as AuthMessage
-import Yesod.Default.Config
-import Yesod.Default.Util (addStaticContentExternal)
-import Network.HTTP.Conduit (Manager)
-import qualified Settings
-import Settings.Development (development)
-import qualified Database.Persist
-import qualified Network.Mail.SMTP as SMTP
-import Database.Persist.Sql (SqlPersistT)
-import Settings.StaticFiles
-import Settings (widgetFile, Extra (..), mailHost, mailSenderAddress)
-import Model
-import Roles
-import Mail
-import Auth
-import Text.Jasmine (minifym)
-import Text.Hamlet (hamletFile)
+import Import.NoFoundation
+import Database.Persist.Sql (ConnectionPool, runSqlPool)
+import Text.Blaze.Html      (preEscapedToHtml)
+import Text.Hamlet          (hamletFile)
 import Text.Shakespeare.Text (lt)
-import System.Log.FastLogger (Logger)
-import Text.Blaze.Html (preEscapedToHtml)
+import Text.Jasmine         (minifym)
+import Yesod.Auth.Email
+import Yesod.Default.Util   (addStaticContentExternal)
+import Yesod.Core.Types     (Logger)
+import qualified Yesod.Core.Unsafe as Unsafe
+import qualified Yesod.Auth.Message as AuthMessage
+import qualified Network.Mail.SMTP as SMTP
+import qualified Data.Text as T
 
--- | The site argument for your application. This can be a good place to
+-- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
 -- starts running, such as database connections. Every handler will have
 -- access to the data present here.
 data App = App
-    { settings :: AppConfig DefaultEnv Extra
-    , getStatic :: Static -- ^ Settings for static file serving.
-    , connPool :: Database.Persist.PersistConfigPool Settings.PersistConf -- ^ Database connection pool.
-    , httpManager :: Manager
-    , persistConfig :: Settings.PersistConf
-    , appLogger :: Logger
+    { appSettings    :: AppSettings
+    , appStatic      :: Static -- ^ Settings for static file serving.
+    , appConnPool    :: ConnectionPool -- ^ Database connection pool.
+    , appHttpManager :: Manager
+    , appLogger      :: Logger
     }
+
+instance HasHttpManager App where
+    getHttpManager = appHttpManager
 
 -- Set up i18n messages. See the message folder.
 mkMessage "App" "messages" "en"
@@ -54,17 +41,20 @@ mkMessage "App" "messages" "en"
 -- explanation for this split.
 mkYesodData "App" $(parseRoutesFile "config/routes")
 
+-- | A convenient synonym for creating forms.
 type Form x = Html -> MForm (HandlerT App IO) (FormResult x, Widget)
 
 -- Please see the documentation for the Yesod typeclass. There are a number
 -- of settings which can be configured by overriding methods here.
 instance Yesod App where
-    approot = ApprootMaster $ appRoot . settings
+    -- Controls the base of generated URLs. For more information on modifying,
+    -- see: https://github.com/yesodweb/yesod/wiki/Overriding-approot
+    approot = ApprootMaster $ appRoot . appSettings
 
     -- Store session data on the client in encrypted cookies,
     -- default session idle timeout is 120 minutes
-    makeSessionBackend _ = fmap Just $ defaultClientSessionBackend
-        (120 * 60) -- 120 minutes
+    makeSessionBackend _ = Just <$> defaultClientSessionBackend
+        120    -- timeout in minutes
         "config/client_session_key.aes"
 
     defaultLayout widget = do
@@ -93,13 +83,7 @@ instance Yesod App where
                 , js_bootstrap_js
                 ])
             $(widgetFile "default-layout")
-        giveUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
-
-    -- This is done to provide an optimization for serving static files from
-    -- a separate domain. Please see the staticRoot setting in Settings.hs
-    urlRenderOverride y (StaticR s) =
-        Just $ uncurry (joinPath y (Settings.staticRoot $ settings y)) $ renderRoute s
-    urlRenderOverride _ _ = Nothing
+        withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
     -- The page to be redirected to when authentication is required.
     authRoute _ = Just $ AuthR LoginR
@@ -127,30 +111,38 @@ instance Yesod App where
     -- and names them based on a hash of their content. This allows
     -- expiration dates to be set far in the future without worry of
     -- users receiving stale content.
-    addStaticContent =
-        addStaticContentExternal minifym genFileName Settings.staticDir (StaticR . flip StaticRoute [])
+    addStaticContent ext mime content = do
+        master <- getYesod
+        let staticDir = appStaticDir $ appSettings master
+        addStaticContentExternal
+            minifym
+            genFileName
+            staticDir
+            (StaticR . flip StaticRoute [])
+            ext
+            mime
+            content
       where
         -- Generate a unique filename based on the content itself
-        genFileName lbs
-            | development = "autogen-" ++ base64md5 lbs
-            | otherwise   = base64md5 lbs
-
-    -- Place Javascript at bottom of the body tag so the rest of the page loads first
-    jsLoader _ = BottomOfBody
+        genFileName lbs = "autogen-" ++ base64md5 lbs
 
     -- What messages should be logged. The following includes all messages when
     -- in development, and warnings and errors in production.
-    shouldLog _ _source level =
-        development || level == LevelWarn || level == LevelError
+    shouldLog app _source level =
+        appShouldLogAll (appSettings app)
+            || level == LevelWarn
+            || level == LevelError
 
     makeLogger = return . appLogger
 
 -- How to run database actions.
 instance YesodPersist App where
-    type YesodPersistBackend App = SqlPersistT
-    runDB = defaultRunDB persistConfig connPool
+    type YesodPersistBackend App = SqlBackend
+    runDB action = do
+        master <- getYesod
+        runSqlPool action $ appConnPool master
 instance YesodPersistRunner App where
-    getDBRunner = defaultGetDBRunner connPool
+    getDBRunner = defaultGetDBRunner appConnPool
 
 instance YesodAuth App where
     type AuthId App = UserId
@@ -159,20 +151,25 @@ instance YesodAuth App where
     loginDest _ = HomeR
     -- Where to send a user after logout
     logoutDest _ = HomeR
+    -- Override the above two destinations when a Referer: header is present
+    redirectToReferer _ = False
 
-    getAuthId creds = runDB $ do
-        x <- getBy $ UniqueUser $ credsIdent creds
-        case x of
-            Just (Entity uid _) -> return $ Just uid
-            Nothing -> do
-                fmap Just $ insert $ User (credsIdent creds) Nothing Nothing False
+    authenticate creds = runDB $ do
+      x <- getBy $ UniqueUser $ credsIdent creds
+      case x of
+       Just (Entity uid _) -> return $ Authenticated uid
+       Nothing -> do
+        Authenticated <$> insert User
+           { userEmail = credsIdent creds
+           , userPassword = Nothing
+           , userVerkey = Nothing
+           , userVerified = False
+           }
 
     -- You can add other plugins like BrowserID, email or OAuth here
     authPlugins _ = [authEmail]
 
     authHttpManager = error "No HTTP manager neccessary."
-
-    redirectToReferer _ = False
 
     renderAuthMessage _ ("en":_) = AuthMessage.englishMessage
     renderAuthMessage _ ("de":_) = germanAuthMessage
@@ -202,8 +199,8 @@ instance YesodAuthEmail App where
 
   sendVerifyEmail email verkey verurl = do
     renderMsg <- getMessageRender
-    extra <- getExtra
-    let sender = mailSenderAddress extra
+    master <- getYesod
+    let sender = mailSenderAddress . appSettings $ master
         receiver = Address Nothing email
         subject = renderMsg MsgVerifyEmailSubject
         body = renderMsg $ MsgVerifyEmailBody verkey verurl
@@ -231,23 +228,20 @@ instance YesodAuthEmail App where
         }
 
   checkPasswordSecurity _ pwd = do
-    case T.compareLength pwd 8 of
+    case compareLength pwd (8 :: Int) of
       LT -> return $ Left "Password must be at least 8 characters long."
       _ -> return $ Right ()
 
-  confirmationEmailSentResponse mail = defaultLayout $ do
+  confirmationEmailSentResponse mail = liftM toTypedContent $ defaultLayout $ do
     setMessageI $ AuthMessage.ConfirmationEmailSent mail
     redirect HomeR
 
-  -- for yesod-auth-1.2.3+
-  -- normalizeEmailAddress = T.toLower
-
-getExtra :: Handler Extra
-getExtra = fmap (appExtra . settings) getYesod
+instance YesodAuthPersist App
 
 sendMail :: Mail -> Handler ()
 sendMail mail = do
-  host <- getExtra >>= return . mailHost
+  master <- getYesod
+  let host = mailHost $ appSettings master
   lift $ SMTP.sendMail host mail
 
 -- This instance is required to use forms. You can modify renderMessage to
@@ -266,6 +260,9 @@ instance RenderMessage App ListRole where
 
 instance RenderMessage App (Maybe ListRole) where
    renderMessage master langs = renderMessage master langs . listRoleMessage
+
+unsafeHandler :: App -> Handler a -> IO a
+unsafeHandler = Unsafe.fakeHandlerGetLogger appLogger
 
 roleMessage :: Maybe Role -> AppMessage
 roleMessage Nothing = MsgRoleNothing
@@ -366,3 +363,5 @@ canSetRole userId _ = do
 -- wiki:
 --
 -- https://github.com/yesodweb/yesod/wiki/Sending-email
+-- https://github.com/yesodweb/yesod/wiki/Serve-static-files-from-a-separate-domain
+-- https://github.com/yesodweb/yesod/wiki/i18n-messages-in-the-scaffolding

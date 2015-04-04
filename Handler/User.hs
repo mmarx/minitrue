@@ -1,7 +1,6 @@
 module Handler.User where
 
 import Import
-import Control.Monad (void)
 
 getUsersR :: Handler Html
 getUsersR = do
