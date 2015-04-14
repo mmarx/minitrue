@@ -42,6 +42,9 @@ SendMessageSuccess subject name: Die Nachricht „#{subject}“ wurde an die Lis
 
 NameField: Name
 DescField: Beschreibung
+HeadField: Kopfzeilen
+FootField: Fußzeilen
+LangField: Sprache
 BodyField: Inhalt
 SubjectField: Betreffzeile
 
@@ -91,3 +94,6 @@ UnsubscribeConfirm name: Wollen Sie sich wirklich aus der Mailingliste „#{name
 
 VerifyEmailSubject: minitrue: Verifizieren Sie ihre Mailadresse
 VerifyEmailBody key url: Um ihre Mailadresse zu verifizieren, besuchen Sie #{url}.
+
+LangEnglish: Englisch
+LangGerman: Deutsch

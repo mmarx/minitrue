@@ -42,6 +42,9 @@ SendMessageSuccess subject@Text name@Text: Message “#{subject}” sent to “#
 
 NameField: Name
 DescField: Description
+HeadField: Header
+FootField: Footer
+LangField: Language
 BodyField: Body
 SubjectField: Subject
 
@@ -92,3 +95,6 @@ UnsubscribeConfirm name@Text: Do you really want to unsubscribe from the list �
 
 VerifyEmailSubject: minitrue: Verify your email address.
 VerifyEmailBody key@Text url@Text: To verify our email address, visit #{url}.
+
+LangEnglish: English
+LangGerman: English

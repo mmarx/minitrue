@@ -9,6 +9,7 @@ import Text.Jasmine         (minifym)
 import Yesod.Auth.Email
 import Yesod.Default.Util   (addStaticContentExternal)
 import Yesod.Core.Types     (Logger)
+import Languages (Language (..))
 import qualified Yesod.Core.Unsafe as Unsafe
 import qualified Yesod.Auth.Message as AuthMessage
 import qualified Network.Mail.SMTP as SMTP
@@ -261,6 +262,9 @@ instance RenderMessage App ListRole where
 instance RenderMessage App (Maybe ListRole) where
    renderMessage master langs = renderMessage master langs . listRoleMessage
 
+instance RenderMessage App Language where
+  renderMessage master langs = renderMessage master langs . languageMessage
+
 unsafeHandler :: App -> Handler a -> IO a
 unsafeHandler = Unsafe.fakeHandlerGetLogger appLogger
 
@@ -274,6 +278,10 @@ listRoleMessage :: Maybe ListRole -> AppMessage
 listRoleMessage Nothing = MsgListRoleNothing
 listRoleMessage (Just Receiver) = MsgListRoleReceiver
 listRoleMessage (Just Sender) = MsgListRoleSender
+
+languageMessage :: Language -> AppMessage
+languageMessage English = MsgLangEnglish
+languageMessage German = MsgLangGerman
 
 isLoggedIn :: Handler AuthResult
 isLoggedIn = do

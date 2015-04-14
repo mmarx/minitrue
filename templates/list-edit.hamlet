@@ -1,5 +1,5 @@
 $newline never
-<form .form-inline action=@{editAction} method=post enctype=#{editET}>
+<form action=@{editAction} method=post enctype=#{editET}>
   ^{editWidget}
   <div .btn-toolbar>
     <button .btn .btn-default type=reset>_{MsgResetButton}

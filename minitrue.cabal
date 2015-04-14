@@ -30,6 +30,7 @@ library
                      Handler.User
                      Handler.Subscriptions
                      Roles
+                     Languages
                      Mail
                      ListMail
                      Auth

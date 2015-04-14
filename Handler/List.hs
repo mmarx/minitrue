@@ -77,7 +77,7 @@ getSendMessageR :: MailingListId -> Handler Html
 getSendMessageR listId = do
   Entity userId user <- requireAuth
   list <- runDB $ get404 listId
-  (msgWidget, msgET) <- generateFormPost $ messageForm Nothing
+  (msgWidget, msgET) <- generateFormPost $ messageForm $ messageTemplate list
   cancelR <- routeAnchor ListsR listId
   defaultLayout $ do
     $(widgetFile "send-message")
@@ -131,6 +131,10 @@ listForm :: Maybe MailingList -> Form MailingList
 listForm mList = renderBootstrap3 BootstrapBasicForm $ MailingList
                  <$> areq textField (bfs MsgNameField) (mailingListName <$> mList)
                  <*> areq textField (bfs MsgDescField) (mailingListDescription <$> mList)
+                 <*> aopt textareaField (bfs MsgHeadField) (mailingListHeader <$> mList)
+                 <*> aopt textareaField (bfs MsgFootField) (mailingListFooter <$> mList)
+                 <*> areq langField (bfs MsgLangField) (mailingListLanguage <$> mList)
+  where langField = selectField optionsEnum
 
 listDeleteForm :: Html -> MForm Handler (FormResult Text, Widget)
 listDeleteForm extra = do
@@ -148,9 +152,17 @@ listEditor mIL = do
   (editWidget, editET) <- handlerToWidget . generateFormPost . listForm $ snd <$> mIL
   $(widgetFile "list-edit")
 
+messageTemplate :: MailingList -> Maybe Message
+messageTemplate list = Just Message { messageSubject = ""
+                                    , messageBody = Textarea $ fromMaybe "" template
+                                    }
+  where template = header <> footer
+        header = ((<>"\n\n") . unTextarea) <$> mailingListHeader list
+        footer = ("\n\n"<>) . unTextarea <$> mailingListFooter list
+
 messageForm :: Maybe Message -> Form Message
 messageForm mMsg = renderBootstrap3 BootstrapBasicForm $ Message
                    <$> areq textField (bfs MsgSubjectField) (messageSubject <$> mMsg)
                    <*> areq textareaField bodyS (messageBody <$> mMsg)
-  where bodyS' = fieldSettingsLabel MsgBodyField :: FieldSettings App
+  where bodyS' = bfs MsgBodyField :: FieldSettings App
         bodyS = bodyS' { fsAttrs = fsAttrs bodyS' ++ [("rows", "15")] }

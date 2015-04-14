@@ -12,6 +12,9 @@ UserRole
 MailingList
     name Text
     description Text
+    header Textarea Maybe
+    footer Textarea Maybe
+    language Language default="'English'"
     UniqueName name
 MailingListUser
     user UserId
