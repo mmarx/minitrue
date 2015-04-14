@@ -29,6 +29,7 @@ library
                      Handler.List
                      Handler.User
                      Handler.Subscriptions
+                     Handler.Events
                      Roles
                      Languages
                      Mail
