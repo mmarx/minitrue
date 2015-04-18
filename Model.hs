@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Model where
 
 import Prelude hiding (concat)
@@ -10,6 +11,8 @@ import Data.Time
 
 import Roles
 import Languages
+
+import Data.Aeson.TH
 
 -- You can define all of your database entities in the entities file.
 -- You can find more information on persistent and how to declare entities
@@ -35,3 +38,6 @@ routeAnchor route key = do
 
 redirectAnchor :: (Yesod master, ToBackendKey SqlBackend ent) => Route master -> Key ent -> HandlerT master IO Html
 redirectAnchor route key = routeAnchor route key >>= redirect
+
+$(deriveJSON defaultOptions ''Day)
+$(deriveJSON defaultOptions ''TimeOfDay)

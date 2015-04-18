@@ -29,12 +29,13 @@ Archive
     subject Text
     body Textarea
     timestamp UTCTime
-Event
+Event json
     name Text
-    description Text
     location Text
-    time UTCTime
+    date Day
+    time TimeOfDay
     list MailingListId
-    UniqueNameTimeList name time list
+    UniqueNameDateTimeList name date time list
+
 
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)

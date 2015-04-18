@@ -15,7 +15,10 @@
 /list/#MailingListId/unsubscribe/#Text UnsubscribeDirectlyR GET POST
 /list/#MailingListId/promote/#UserId PromoteR POST
 /list/#MailingListId/demote/#UserId DemoteR POST
-/list/#MailingListId/events/ EventsR GET
+/list/#MailingListId/events/ ListEventsR GET POST
+
+/event/#EventId/ EventR GET POST
+/event/#EventId/delete EventDeleteR POST
 
 /user/ UsersR GET
 /user/#UserId/delete UserDeleteR POST

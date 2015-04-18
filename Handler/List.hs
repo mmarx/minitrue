@@ -1,6 +1,7 @@
 module Handler.List where
 
 import Import
+import Handler.Events
 import ListMail
 
 import Yesod.Form.Bootstrap3
@@ -79,6 +80,7 @@ getSendMessageR listId = do
   _ <- requireAuth
   list <- runDB $ get404 listId
   (msgWidget, msgET) <- generateFormPost $ messageForm $ messageTemplate list
+  (evtWidget, evtET) <- generateFormPost $ eventForm listId Nothing
   cancelR <- routeAnchor ListsR listId
   defaultLayout $ do
     $(widgetFile "send-message")

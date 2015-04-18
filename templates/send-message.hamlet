@@ -5,8 +5,15 @@ $newline never
     \ <small>
         _{MsgList $ mailingListName list}
 
-<form action=@{SendMessageR listId} method=post enctype=#{msgET}>
-  ^{msgWidget}
-  <div .btn-toolbar>
-    <a href=#{cancelR} .btn .btn-default type=button>_{MsgCancelButton}
-    <button .btn .btn-primary type=submit>_{MsgSendMessageButton}
+<h2>_{MsgEvents}
+  <form action=@{ListEventsR listId} method=post enctype #{evtET}>
+    ^{evtWidget}
+    <div .btn-toolbar>
+      <a href=#{cancelR} .btn .btn-default type=button>_{MsgCancelButton}
+      <button .btn .btn-primary type=submit>_{MsgAddEventButton}
+<h2>_{MsgMessage}
+  <form action=@{SendMessageR listId} method=post enctype=#{msgET}>
+    ^{msgWidget}
+    <div .btn-toolbar>
+      <a href=#{cancelR} .btn .btn-default type=button>_{MsgCancelButton}
+      <button .btn .btn-primary type=submit>_{MsgSendMessageButton}

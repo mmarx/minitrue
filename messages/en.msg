@@ -39,6 +39,7 @@ DeleteUserConfirm name@Text: Really delete User “#{name}”?
 SendMessage: Send message
 SendMessageFail: Could not send message.
 SendMessageSuccess subject@Text name@Text: Message “#{subject}” sent to “#{name}”.
+Message: Message
 
 NameField: Name
 DescField: Description
@@ -86,6 +87,7 @@ SendMessageButton: Send
 NewListButton: Add
 EditListButton: Update
 UnsubscribeButton: Unsubscribe
+AddEventButton: Add
 
 UnsubscribeFail name@Text: Incorrect key, could not unsubscribe from list “#{name}”.
 UnsubscribeSuccess name@Text: You have been unsubscribed from the list “#{name}”.
@@ -98,3 +100,9 @@ VerifyEmailBody key@Text url@Text: To verify our email address, visit #{url}.
 
 LangEnglish: English
 LangGerman: English
+
+Events: Events
+EventName: Name
+EventLocation: Location
+EventDate: Date
+EventTime: Time

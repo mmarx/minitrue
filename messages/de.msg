@@ -39,6 +39,7 @@ DeleteUserConfirm name: Möchten Sie den Benutzer „#{name}“ wirklich lösche
 SendMessage: Nachricht versenden
 SendMessageFail: Die Nachricht konnte nicht versendet werden.
 SendMessageSuccess subject name: Die Nachricht „#{subject}“ wurde an die Liste „#{name}“ versendet.
+Message: Nachricht
 
 NameField: Name
 DescField: Beschreibung
@@ -86,6 +87,7 @@ SendMessageButton: Absenden
 NewListButton: Hinzufügen
 EditListButton: Aktualisieren
 UnsubscribeButton: Austragen
+AddEventButton: Hinzufügen
 
 UnsubscribeFail name: Ungültiger Schlüssel — Sie konnten nicht aus der Mailingliste „#{name}“ ausgetragen werden.
 UnsubscribeSuccess name: Sie wurden aus der Mailingliste „#{name}“ ausgetragen.
@@ -97,3 +99,9 @@ VerifyEmailBody key url: Um ihre Mailadresse zu verifizieren, besuchen Sie #{url
 
 LangEnglish: Englisch
 LangGerman: Deutsch
+
+Events: Veranstaltungen
+EventName: Name
+EventLocation: Veranstaltungsort
+EventDate: Datum
+EventTime: Veranstaltungsbeginn

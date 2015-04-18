@@ -8,6 +8,7 @@ import Text.Shakespeare.Text (lt)
 import Text.Jasmine         (minifym)
 import Yesod.Default.Util   (addStaticContentExternal)
 import Yesod.Core.Types     (Logger)
+import Yesod.Form.Jquery    (YesodJquery (..))
 import Languages (Language (..))
 import qualified Yesod.Core.Unsafe as Unsafe
 import qualified Yesod.Auth.Message as AuthMessage
@@ -101,6 +102,9 @@ instance Yesod App where
     isAuthorized (UserDeleteR userId) _ = canDeleteUser userId
     isAuthorized (RoleR userId role) _ = canSetRole userId role
     isAuthorized (UnsubscribeDirectlyR _ _) _ = return Authorized
+    isAuthorized (ListEventsR listId) _ = canEditList listId
+    isAuthorized (EventR eventId) _ = canEditEvent eventId
+    isAuthorized (EventDeleteR eventId) _ = canEditEvent eventId
 
     isAuthorized (StaticR _) _ = return Authorized
     isAuthorized (AuthR _) _ = return Authorized
@@ -238,6 +242,11 @@ instance YesodAuthEmail App where
 
 instance YesodAuthPersist App
 
+instance YesodJquery App where
+  urlJqueryJs _ = Left $ StaticR js_jquery_js
+  urlJqueryUiJs _ = Left $ StaticR js_jquery_ui_js
+  urlJqueryUiCss _ = Left $ StaticR css_jquery_ui_css
+
 sendMail :: Mail -> Handler ()
 sendMail mail = do
   master <- getYesod
@@ -363,6 +372,13 @@ canSetRole userId _ = do
         then return $ Unauthorized "Can't change your own role."
         else isAdmin
     Nothing -> return AuthenticationRequired
+
+canEditEvent :: EventId -> Handler AuthResult
+canEditEvent eventId = do
+  mEvt <- runDB $ get eventId
+  case mEvt of
+    Nothing -> return $ Unauthorized "Event doesn't exist."
+    Just evt -> canEditList $ eventList evt
 
 -- Note: previous versions of the scaffolding included a deliver function to
 -- send emails. Unfortunately, there are too many different options for us to
