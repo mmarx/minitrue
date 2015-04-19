@@ -6,7 +6,7 @@ $newline never
         _{MsgList $ mailingListName list}
 
 <h2>_{MsgEvents}
-  <form action=@{ListEventsR listId} method=post enctype #{evtET}>
+  <form action=@{ListEventsR listId} method=post enctype=#{evtET}>
     ^{evtWidget}
     <div .btn-toolbar>
       <a href=#{cancelR} .btn .btn-default type=button>_{MsgCancelButton}

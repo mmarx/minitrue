@@ -1,7 +1,6 @@
 module Languages where
 
 import Prelude ( Read
-               , Read
                , Show
                , Enum
                , Eq
