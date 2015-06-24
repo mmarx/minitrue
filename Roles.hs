@@ -6,7 +6,6 @@ import Prelude ( Maybe (..)
                , Enum
                , Eq
                , Bounded
-               , read
                , show
                , (.)
                )

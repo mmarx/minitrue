@@ -75,7 +75,7 @@ postListDeleteR listId = do
 
 getSendMessageR :: MailingListId -> Handler Html
 getSendMessageR listId = do
-  Entity userId user <- requireAuth
+  _ <- requireAuth
   list <- runDB $ get404 listId
   (msgWidget, msgET) <- generateFormPost $ messageForm $ messageTemplate list
   cancelR <- routeAnchor ListsR listId

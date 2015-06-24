@@ -61,7 +61,6 @@ instance Yesod App where
     defaultLayout widget = do
         master <- getYesod
         mmsg <- getMessage
-        renderMsg <- getMessageRender :: Handler (AppMessage -> Text)
         mAuth <- maybeAuth
         mRole <- getUserRole
         modalId <- newIdent

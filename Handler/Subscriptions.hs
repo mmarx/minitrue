@@ -60,7 +60,7 @@ getUnsubscribeDirectlyR listId key = do
     mlu <- getBy $ UniqueUnsubscribe key listId
     return (lst, mlu)
   case mMlu of
-    Just (Entity _ mlu) -> defaultLayout $ do
+    Just (Entity _ _) -> defaultLayout $ do
       $(widgetFile "unsubscribe")
     Nothing -> do
       setMessageI $ MsgUnsubscribeFail $ mailingListName list
