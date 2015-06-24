@@ -1,14 +1,10 @@
 module Languages where
 
-import Prelude ( Maybe (..)
-               , Read
+import Prelude ( Read
                , Show
                , Enum
                , Eq
                , Bounded
-               , read
-               , show
-               , (.)
                )
 import Database.Persist.TH
 
