@@ -6,7 +6,6 @@ import Text.Blaze.Html      (preEscapedToHtml)
 import Text.Hamlet          (hamletFile)
 import Text.Shakespeare.Text (lt)
 import Text.Jasmine         (minifym)
-import Yesod.Auth.Email
 import Yesod.Default.Util   (addStaticContentExternal)
 import Yesod.Core.Types     (Logger)
 import Languages (Language (..))
@@ -14,6 +13,7 @@ import qualified Yesod.Core.Unsafe as Unsafe
 import qualified Yesod.Auth.Message as AuthMessage
 import qualified Network.Mail.SMTP as SMTP
 import qualified Data.Text as T
+import Auth
 
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
