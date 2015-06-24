@@ -12,3 +12,4 @@ yesod-devel/
 *~
 cabal.sandbox.config
 .cabal-sandbox
+.stack-work
