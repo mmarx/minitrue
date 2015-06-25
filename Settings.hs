@@ -54,6 +54,7 @@ data AppSettings = AppSettings
     -- ^ Copyright text to appear in the footer of the page
     , appAnalytics              :: Maybe Text
     -- ^ Google Analytics code
+    , appNotifyDelay            :: Int
     , appMailHost               :: Text
     , appMailFromName           :: Maybe Text
     , appMailFromAddress        :: Text
@@ -90,6 +91,7 @@ instance FromJSON AppSettings where
         appCopyright              <- o .: "copyright"
         appAnalytics              <- o .:? "analytics"
 
+        appNotifyDelay            <- o .:? "notifyDelay"      .!= 10000000
         appMailHost               <- o .: "mailHost"
         appMailFromName           <- o .:? "mailFromName"
         appMailFromAddress        <- o .: "mailFromAddress"

@@ -12,6 +12,7 @@ module Application
     , db
     ) where
 
+import Control.Concurrent                   (forkIO, killThread, threadDelay)
 import Control.Monad.Logger                 (liftLoc, runLoggingT)
 import Database.Persist.Postgresql          (createPostgresqlPool, pgConnStr,
                                              pgPoolSize, runSqlPool)
@@ -27,6 +28,7 @@ import Network.Wai.Middleware.RequestLogger (Destination (Logger),
                                              mkRequestLogger, outputFormat)
 import System.Log.FastLogger                (defaultBufSize, newStdoutLoggerSet,
                                              toLogStr)
+import System.Systemd.Daemon                (notifyReady, notifyWatchdog)
 
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
@@ -141,10 +143,19 @@ appMain = do
 
     -- Generate a WAI Application from the foundation
     app <- makeApplication foundation
+    dog <- forkIO $ handleWatchdog $ appNotifyDelay settings
+
+    void $ notifyReady
 
     -- Run the application with Warp
     runSettings (warpSettings foundation) app
 
+    killThread dog
+
+handleWatchdog :: Int -> IO ()
+handleWatchdog delay = forever $ do
+  threadDelay delay
+  notifyWatchdog
 
 --------------------------------------------------------------
 -- Functions for DevelMain.hs (a way to run the app from GHCi)

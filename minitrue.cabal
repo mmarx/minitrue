@@ -98,6 +98,7 @@ library
                  , mime-mail
                  , random
                  , time
+                 , systemd
 
 executable         minitrue
     if flag(library-only)

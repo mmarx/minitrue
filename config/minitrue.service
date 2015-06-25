@@ -1,0 +1,19 @@
+[Unit]
+Description=The Ministry of Truth
+After=postgresql@9.4-main.service
+Requires=postgresql@9.4-main.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/minitrue/
+User=minitrue
+Group=nogroup
+Environment="MAILFROMADDRESS=" "MAILLISTIDSUFFIX=" "PGPASS=" "APPROOT="
+ExecStart=/opt/minitrue/minitrue
+Restart=on-failure
+Timeout=30
+WatchdogSec=60
+NotifyAccess=main
+
+[Install]
+WantedBy=multi-user.target
