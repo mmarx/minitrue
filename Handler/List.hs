@@ -65,6 +65,7 @@ postListDeleteR listId = do
     FormSuccess _ -> do
       name <- runDB $ do
         list <- get404 listId
+        deleteWhere [ArchiveList ==. listId]
         deleteWhere [MailingListUserList ==. listId]
         delete listId
         return $ mailingListName list
