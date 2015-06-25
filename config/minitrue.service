@@ -11,7 +11,7 @@ Group=nogroup
 Environment="MAILFROMADDRESS=" "MAILLISTIDSUFFIX=" "PGPASS=" "APPROOT="
 ExecStart=/opt/minitrue/minitrue
 Restart=on-failure
-Timeout=30
+TimeoutSec=30
 WatchdogSec=60
 NotifyAccess=main
 
