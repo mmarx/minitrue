@@ -84,6 +84,7 @@ getSendMessageR listId = do
   cancelR <- routeAnchor ListsR listId
   defaultLayout $ do
     $(widgetFile "send-message")
+    $(fayFile "SendMessage")
 
 postSendMessageR :: MailingListId -> Handler Html
 postSendMessageR listId = do

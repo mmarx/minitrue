@@ -17,6 +17,7 @@ Flag library-only
     Default:       False
 
 library
+    hs-source-dirs: ., app
     exposed-modules: Application
                      Foundation
                      Import
@@ -30,6 +31,7 @@ library
                      Handler.User
                      Handler.Subscriptions
                      Handler.Events
+                     Handler.Category
                      Roles
                      Languages
                      Mail
@@ -55,6 +57,7 @@ library
                 FlexibleInstances
                 EmptyDataDecls
                 NoMonomorphismRestriction
+                RankNTypes
                 DeriveDataTypeable
                 ViewPatterns
                 TupleSections
@@ -66,6 +69,7 @@ library
                  , yesod-auth
                  , yesod-static
                  , yesod-form
+                 , yesod-table
                  , classy-prelude
                  , classy-prelude-conduit
                  , classy-prelude-yesod

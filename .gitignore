@@ -13,3 +13,6 @@ yesod-devel/
 cabal.sandbox.config
 .cabal-sandbox
 .stack-work
+fay/Fay/
+static/fay-runtime.js
+static/faygen-*.js

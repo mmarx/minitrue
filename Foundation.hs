@@ -9,7 +9,7 @@ import Text.Jasmine         (minifym)
 import Yesod.Default.Util   (addStaticContentExternal)
 import Yesod.Core.Types     (Logger)
 import Yesod.Form.Jquery    (YesodJquery (..))
-import Languages (Language (..))
+import Languages            (Language (..))
 import qualified Yesod.Core.Unsafe as Unsafe
 import qualified Yesod.Auth.Message as AuthMessage
 import qualified Network.Mail.SMTP as SMTP
@@ -21,11 +21,11 @@ import Auth
 -- starts running, such as database connections. Every handler will have
 -- access to the data present here.
 data App = App
-    { appSettings    :: AppSettings
-    , appStatic      :: Static -- ^ Settings for static file serving.
-    , appConnPool    :: ConnectionPool -- ^ Database connection pool.
-    , appHttpManager :: Manager
-    , appLogger      :: Logger
+    { appSettings          :: AppSettings
+    , appStatic            :: Static -- ^ Settings for static file serving.
+    , appConnPool          :: ConnectionPool -- ^ Database connection pool.
+    , appHttpManager       :: Manager
+    , appLogger            :: Logger
     }
 
 instance HasHttpManager App where
@@ -105,7 +105,15 @@ instance Yesod App where
     isAuthorized (ListEventsR listId) _ = canEditList listId
     isAuthorized (EventR eventId) _ = canEditEvent eventId
     isAuthorized (EventDeleteR eventId) _ = canEditEvent eventId
+    isAuthorized (CategoryR _) _ = isInnerCircle
+    isAuthorized (CategoryDeleteR _) _ = isInnerCircle
 
+    isAuthorized AllEventsR False = return Authorized
+    isAuthorized AllEventsR True = isInnerCircle
+    isAuthorized (CategoryEventsR _) False = return Authorized
+    isAuthorized (CategoryEventsR _) True = isInnerCircle
+    isAuthorized CategoriesR False = return Authorized
+    isAuthorized CategoriesR True = isInnerCircle
     isAuthorized (StaticR _) _ = return Authorized
     isAuthorized (AuthR _) _ = return Authorized
     isAuthorized FaviconR _ = return Authorized
