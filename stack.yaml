@@ -4,4 +4,5 @@ packages:
 extra-deps:
 - smtp-mail-0.1.4.5
 - systemd-1.0.0
+- yesod-bin-1.4.11
 resolver: lts-2.15
