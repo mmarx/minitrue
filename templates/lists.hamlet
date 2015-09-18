@@ -3,24 +3,7 @@ $newline never
 
 <h2>_{MsgAvailableLists}
 <div .table-responsive>
-  <table .table .table-striped>
-    <thead>
-      <th>_{MsgNameField}
-      <th>_{MsgDescField}
-      <th>_{MsgSubscriberCount}
-      <th>_{MsgSenderCount}
-      <th>_{MsgListActions}
-    <tbody>
-      $forall (list, subscribers, authors) <- lists
-        $with lst <- entityVal list
-          <tr>
-            <td>#{mailingListName lst}
-            <td>#{mailingListDescription lst}
-            <td>#{subscribers}
-            <td>#{authors}
-            <td>
-              <a name=#{anchor $ entityKey list}>
-              ^{listEntry list deleteForm}
+  ^{theLists}
 
 <h2>_{MsgNewList}
 ^{listEditor Nothing}

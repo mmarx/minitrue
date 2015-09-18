@@ -1,5 +1,7 @@
 module Import
     ( module Import
+    , Table
+    , buildBootstrap
     ) where
 
 import Foundation                 as Import

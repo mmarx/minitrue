@@ -1,18 +1,23 @@
 module Handler.List where
 
-import Import
+import Import hiding ((<>))
 import Handler.Events
 import ListMail
-
-import Yesod.Form.Bootstrap3
+import qualified Yesod.Table as Table
+import Data.Monoid ((<>))
 
 getListsR :: Handler Html
 getListsR = do
   lists <- runDB $ selectList [] [Asc MailingListName]
            >>= mapM listInfo
   deleteForm <- generateFormPost $ listDeleteForm
-  defaultLayout $ do
-    $(widgetFile "lists")
+  r <- getMessageRender
+  let actions (list, _, _) = [whamlet|$newline never
+                                      <a name=#{anchor $ entityKey list}>
+                                      ^{listEntry list deleteForm}
+                             |]
+  let theLists = listTable actions r lists
+  defaultLayout $(widgetFile "lists")
   where listInfo lst@(Entity listId _) = do
           subs <- count [MailingListUserList ==. listId]
           auths <- count [ MailingListUserList ==. listId
@@ -139,6 +144,22 @@ listForm mList = renderBootstrap3 BootstrapBasicForm $ MailingList
                  <*> aopt textareaField (bfs MsgFootField) (mailingListFooter <$> mList)
                  <*> areq langField (bfs MsgLangField) (mailingListLanguage <$> mList)
   where langField = selectField optionsEnum
+
+listTable :: ((Entity MailingList, Int, Int) -> Widget)
+          -> (AppMessage -> Text)
+          -> [(Entity MailingList, Int, Int)]
+          -> WidgetT App IO ()
+listTable actions r =
+  buildBootstrap $ (mempty
+    <> Table.text (r MsgNameField) (mailingListName . lst)
+    <> Table.text (r MsgDescField) (mailingListDescription . lst)
+    <> Table.show (r MsgLangField) (mailingListLanguage . lst)
+    <> Table.show (r MsgSubscriberCount) subs
+    <> Table.show (r MsgSenderCount) auts)
+    <> Table.widget (r MsgListActions) actions
+  where lst (l, _, _) = entityVal l
+        subs (_, s, _) = s
+        auts (_, _, a) = a
 
 listDeleteForm :: Html -> MForm Handler (FormResult Text, Widget)
 listDeleteForm extra = do
