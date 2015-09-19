@@ -16,7 +16,7 @@ getListsR = do
                                       <a name=#{anchor $ entityKey list}>
                                       ^{listEntry list deleteForm}
                              |]
-  let theLists = listTable actions r lists
+  let theLists = listsTable actions r lists
   defaultLayout $(widgetFile "lists")
   where listInfo lst@(Entity listId _) = do
           subs <- count [MailingListUserList ==. listId]
@@ -43,8 +43,23 @@ getListR listId = do
     subs <- selectList [MailingListUserList ==. listId] [Asc MailingListUserUser]
             >>= mapM subscriber
     return (lst, subs)
-  defaultLayout $ do
-    $(widgetFile "list")
+  r <- getMessageRender
+  r' <- getMessageRender
+  let actions (userId, _, role) = [whamlet|$newline never
+                                           $case role
+                                             $of Receiver
+                                               <form .form-inline method=post action=@{PromoteR listId userId}>
+                                                 <button .btn-sm .btn .btn-success type=submit>
+                                                   <span .glyphicon .glyphicon-comment>
+                                                   \ _{MsgPromoteSubscriber}
+                                             $of Sender
+                                               <form .form-inline method=post action=@{DemoteR listId userId}>
+                                                 <button .btn-sm .btn .btn-danger type=submit>
+                                                   <span .glyphicon .glyphicon-book>
+                                                   \ _{MsgDemoteSubscriber}
+                                           |]
+      theSubs = subscribersTable actions r r' subscribers
+  defaultLayout $(widgetFile "list")
   where subscriber :: Entity MailingListUser -> YesodDB App (UserId, Text, ListRole)
         subscriber (Entity _ mlu) = do
           let userId = mailingListUserUser mlu
@@ -145,21 +160,34 @@ listForm mList = renderBootstrap3 BootstrapBasicForm $ MailingList
                  <*> areq langField (bfs MsgLangField) (mailingListLanguage <$> mList)
   where langField = selectField optionsEnum
 
-listTable :: ((Entity MailingList, Int, Int) -> Widget)
-          -> (AppMessage -> Text)
-          -> [(Entity MailingList, Int, Int)]
-          -> WidgetT App IO ()
-listTable actions r =
-  buildBootstrap $ (mempty
+listsTable :: ((Entity MailingList, Int, Int) -> Widget)
+           -> (AppMessage -> Text)
+           -> [(Entity MailingList, Int, Int)]
+           -> WidgetT App IO ()
+listsTable actions r =
+  buildBootstrap $ mempty
     <> Table.text (r MsgNameField) (mailingListName . lst)
     <> Table.text (r MsgDescField) (mailingListDescription . lst)
     <> Table.show (r MsgLangField) (mailingListLanguage . lst)
     <> Table.show (r MsgSubscriberCount) subs
-    <> Table.show (r MsgSenderCount) auts)
+    <> Table.show (r MsgSenderCount) auts
     <> Table.widget (r MsgListActions) actions
   where lst (l, _, _) = entityVal l
         subs (_, s, _) = s
         auts (_, _, a) = a
+
+subscribersTable :: ((UserId, Text, ListRole) -> Widget)
+                 -> (AppMessage -> Text)
+                 -> (ListRole -> Text)
+                 -> [(UserId, Text, ListRole)]
+                 -> WidgetT App IO ()
+subscribersTable actions r r' =
+  buildBootstrap $ mempty
+    <> Table.text (r MsgEmailAddress) mail
+    <> Table.text (r MsgRole) role
+    <> Table.widget (r MsgSubscriberActions) actions
+  where mail (_, m, _) = m
+        role (_, _, x) = r' x
 
 listDeleteForm :: Html -> MForm Handler (FormResult Text, Widget)
 listDeleteForm extra = do
