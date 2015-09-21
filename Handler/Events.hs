@@ -1,8 +1,6 @@
 module Handler.Events where
 
 import Import
-import Yesod.Form.Bootstrap3
-import Yesod.Form.Jquery
 
 getEventR :: EventId -> Handler Value
 getEventR eventId = (runDB $ get404 eventId) >>= returnJson
@@ -44,9 +42,30 @@ postEventDeleteR eventId = do
   returnJson ()
 
 eventForm :: MailingListId -> Maybe Event -> Form Event
-eventForm listId mEvt = renderBootstrap3 BootstrapBasicForm $ Event
-                        <$> areq textField (bfs MsgEventName) (eventName <$> mEvt)
-                        <*> areq textField (bfs MsgEventLocation) (eventLocation <$> mEvt)
-                        <*> areq (jqueryDayField def) (bfs MsgEventDate) (eventDate <$> mEvt)
-                        <*> areq timeFieldTypeTime (bfs MsgEventTime) (eventTime <$> mEvt)
-                        <*> areq hiddenField "" (Just $ maybe listId eventList mEvt)
+eventForm listId mEvt =
+  renderBootstrap3 BootstrapBasicForm $
+  Event <$>
+  areq textField
+       (bfs MsgEventName)
+       (eventName <$> mEvt) <*>
+  areq textField
+       (bfs MsgEventLocation)
+       (eventLocation <$> mEvt) <*>
+  areq (jqueryDayField def)
+       (bfs MsgEventDate)
+       (eventDate <$> mEvt) <*>
+  areq timeFieldTypeTime
+       (bfs MsgEventTime)
+       (eventTime <$> mEvt) <*>
+  areq hiddenField
+       ""
+       (Just $
+        maybe listId eventList mEvt) <*>
+  areq categoryField
+       (bfs MsgEventCategory)
+       (eventCategory <$> mEvt)
+  where categoryField =
+          selectField $
+          optionsPersistKey []
+                            [Asc CategoryName]
+                            categoryName

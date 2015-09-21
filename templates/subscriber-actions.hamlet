@@ -1,0 +1,12 @@
+$newline never
+$case role
+  $of Receiver
+    <form .form-inline method=post action=@{PromoteR listId userId}>
+      <button .btn-sm .btn .btn-success type=submit>
+        <span .glyphicon .glyphicon-comment>
+        \ _{MsgPromoteSubscriber}
+  $of Sender
+    <form .form-inline method=post action=@{DemoteR listId userId}>
+      <button .btn-sm .btn .btn-danger type=submit>
+        <span .glyphicon .glyphicon-book>
+        \ _{MsgDemoteSubscriber}

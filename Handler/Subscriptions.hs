@@ -5,6 +5,7 @@ import ListMail
 import System.Random (newStdGen)
 import Network.Mail.Mime (randomString)
 
+
 randomKey :: m -> IO Text
 randomKey _ = newStdGen >>= return . pack . fst . randomString 10
 

@@ -29,13 +29,18 @@ Archive
     subject Text
     body Textarea
     timestamp UTCTime
+Category json
+    name Text
+    description Text
+    UniqueCategoryName name
+    deriving Read Show Data Typeable
 Event json
     name Text
     location Text
     date Day
     time TimeOfDay
     list MailingListId
+    category CategoryId
     UniqueNameDateTimeList name date time list
-    deriving Typeable
 
  -- By default this file is used in Model.hs (which is imported by Foundation.hs)

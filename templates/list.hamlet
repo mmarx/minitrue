@@ -2,7 +2,8 @@ $newline never
 <h1>_{MsgList $ mailingListName $ list}
 
 <h2>_{MsgListSubscribers}
-^{theSubs}
+<div .table-responsive>
+  ^{theSubs}
 
 <h2>_{MsgEditList}
 ^{listEditor $ Just $ (listId, list)}

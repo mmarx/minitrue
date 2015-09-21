@@ -104,4 +104,8 @@ Events: Veranstaltungen
 EventName: Name
 EventLocation: Veranstaltungsort
 EventDate: Datum
+EventCategory: Kategorie
 EventTime: Veranstaltungsbeginn
+
+CategoryName: Name
+CategoryDescription: Beschreibung

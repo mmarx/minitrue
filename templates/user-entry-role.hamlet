@@ -1,0 +1,12 @@
+$newline never
+<a name=#{anchor userId}>
+$if authId == userId
+  _{mRole}
+$else
+  <div .btn-group>
+    <button type=button .btn-sm .btn .btn-default .dropdown-toggle data-toggle=dropdown>
+    _{mRole} <span class=caret></span>
+    <ul .dropdown-menu role=menu>
+      $forall role <- enumFrom minBound
+        <li>
+          <a href=@{RoleR userId role}>_{role}

@@ -1,37 +1,4 @@
 $newline never
 <h1>_{MsgSubscriptions}
 <div .table-responsive>
-  <table .table .table-striped>
-    <thead>
-      <th>_{MsgNameField}
-      <th>_{MsgDescField}
-      <th>_{MsgSubscriptionStatus}
-      <th>_{MsgListActions}
-    <tbody>
-      $forall (listId, list, mRole) <- lists
-        <tr>
-          <td>#{mailingListName list}
-          <td>#{mailingListDescription list}
-          <td>
-              _{mRole}
-          <td>
-            <div .btn-toolbar>
-              $maybe role <- mRole
-                <form .form-inline method=post action=@{UnsubscribeR listId}>
-                  <button .btn-sm .btn .btn-danger type=submit>
-                    <span .glyphicon .glyphicon-remove>
-                    \ _{MsgActionUnsubscribe}
-                \ #
-                $with canSend <- role == Sender
-                  <a href=@{SendMessageR listId} :not canSend:.disabled .btn-sm .btn .btn-primary type=button>
-                    <span .glyphicon .glyphicon-pencil>
-                    \ _{MsgActionSendMessage}
-              $nothing
-                <form .form-inline method=post action=@{SubscribeR listId}>
-                  <button .btn-sm .btn .btn-success type=submit>
-                    <span .glyphicon .glyphicon-ok>
-                    \ _{MsgActionSubscribe}
-                \ #
-              <a href=@{ListR listId} :not $ canEdit mRole:.disabled .btn-sm .btn .btn-default type=button>
-               <span .glyphicon .glyphicon-wrench>
-               \ _{MsgActionEditList}
+  ^{theSubscriptions}

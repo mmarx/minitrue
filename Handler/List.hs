@@ -12,10 +12,7 @@ getListsR = do
            >>= mapM listInfo
   deleteForm <- generateFormPost $ listDeleteForm
   r <- getMessageRender
-  let actions (list, _, _) = [whamlet|$newline never
-                                      <a name=#{anchor $ entityKey list}>
-                                      ^{listEntry list deleteForm}
-                             |]
+  let actions (list, _, _) = $(widgetFile "list-actions")
   let theLists = listsTable actions r lists
   defaultLayout $(widgetFile "lists")
   where listInfo lst@(Entity listId _) = do
@@ -45,20 +42,7 @@ getListR listId = do
     return (lst, subs)
   r <- getMessageRender
   r' <- getMessageRender
-  let actions (userId, _, role) = [whamlet|$newline never
-                                           $case role
-                                             $of Receiver
-                                               <form .form-inline method=post action=@{PromoteR listId userId}>
-                                                 <button .btn-sm .btn .btn-success type=submit>
-                                                   <span .glyphicon .glyphicon-comment>
-                                                   \ _{MsgPromoteSubscriber}
-                                             $of Sender
-                                               <form .form-inline method=post action=@{DemoteR listId userId}>
-                                                 <button .btn-sm .btn .btn-danger type=submit>
-                                                   <span .glyphicon .glyphicon-book>
-                                                   \ _{MsgDemoteSubscriber}
-                                           |]
-      theSubs = subscribersTable actions r r' subscribers
+  let theSubs = subscribersTable listId r r' subscribers
   defaultLayout $(widgetFile "list")
   where subscriber :: Entity MailingListUser -> YesodDB App (UserId, Text, ListRole)
         subscriber (Entity _ mlu) = do
@@ -176,18 +160,19 @@ listsTable actions r =
         subs (_, s, _) = s
         auts (_, _, a) = a
 
-subscribersTable :: ((UserId, Text, ListRole) -> Widget)
+subscribersTable :: MailingListId
                  -> (AppMessage -> Text)
                  -> (ListRole -> Text)
                  -> [(UserId, Text, ListRole)]
                  -> WidgetT App IO ()
-subscribersTable actions r r' =
+subscribersTable listId r r' =
   buildBootstrap $ mempty
     <> Table.text (r MsgEmailAddress) mail
-    <> Table.text (r MsgRole) role
+    <> Table.text (r MsgRole) role'
     <> Table.widget (r MsgSubscriberActions) actions
   where mail (_, m, _) = m
-        role (_, _, x) = r' x
+        role' (_, _, x) = r' x
+        actions (userId, _, role) = $(widgetFile "subscriber-actions")
 
 listDeleteForm :: Html -> MForm Handler (FormResult Text, Widget)
 listDeleteForm extra = do

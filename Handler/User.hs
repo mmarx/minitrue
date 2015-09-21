@@ -1,18 +1,21 @@
 module Handler.User where
 
-import Import
+import Import hiding ((<>))
+import qualified Yesod.Table as Table
+import Data.Monoid ((<>))
 
 getUsersR :: Handler Html
 getUsersR = do
   authId <- requireAuthId
   users <- runDB $ selectList [] [Asc UserId]
            >>= mapM userInfo
+  r <- getMessageRender
   deleteForm <- generateFormPost userDummyForm
-  defaultLayout $ do
-    $(widgetFile "users")
-    where userInfo (Entity userId user) = do
-            mRole <- getBy $ UniqueUserRole userId
-            return (userId, user, (userRoleRole . entityVal) <$> mRole)
+  let theUsers = userTable authId r deleteForm users
+  defaultLayout $(widgetFile "users")
+  where userInfo (Entity userId user) = do
+          mRole <- getBy $ UniqueUserRole userId
+          return (userId, user, (userRoleRole . entityVal) <$> mRole)
 
 getRoleR :: UserId -> Role -> Handler Html
 getRoleR userId role = do
@@ -24,8 +27,7 @@ getRoleR userId role = do
   cancelR <- routeAnchor UsersR userId
   msgOldRole <- getMessageRender >>= \r -> return $ r mOldRole
   msgRole <- getMessageRender >>= \r -> return $ r role
-  defaultLayout $ do
-    $(widgetFile "user-role")
+  defaultLayout $(widgetFile "user-role")
 
 postRoleR :: UserId -> Role -> Handler Html
 postRoleR userId role = do
@@ -81,3 +83,21 @@ userDummyForm extra = do
                 #{extra}
                 ^{fvInput view}|]
   return (res, widget)
+
+userTable :: UserId
+          -> (AppMessage -> Text)
+          -> (Widget, Enctype)
+          -> [(UserId, User, Maybe Role)]
+          -> WidgetT App IO ()
+userTable authId r deleteForm =
+  buildBootstrap $ mempty
+    <> Table.text (r MsgEmailAddress) mail
+    <> Table.text (r MsgVerifiedStatus) verified
+    <> Table.widget (r MsgUserRole) role
+    <> Table.widget (r MsgUserActions) del
+    where mail (_, u, _) = userEmail u
+          verified (_, u, _)
+                   | userVerified u = r MsgVerified
+                   | otherwise = r MsgUnverified
+          role (userId, _, mRole) = $(widgetFile "user-entry-role")
+          del (userId, user, _) = userDeleteEntry (Entity userId user) deleteForm

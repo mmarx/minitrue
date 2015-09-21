@@ -20,6 +20,10 @@
 /event/#EventId/ EventR GET POST
 /event/#EventId/delete EventDeleteR POST
 
+/category CategoriesR GET
+/category/#CategoryId/ CategoryR GET POST
+/category/#CategoryId/delete CategoryDeleteR POST
+
 /user/ UsersR GET
 /user/#UserId/delete UserDeleteR POST
 /user/#UserId/role/#Role RoleR GET POST

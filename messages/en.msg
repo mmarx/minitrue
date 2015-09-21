@@ -105,4 +105,8 @@ Events: Events
 EventName: Name
 EventLocation: Location
 EventDate: Date
+EventCategory: Category
 EventTime: Time
+
+CategoryName: Name
+CategoryDescription: Description

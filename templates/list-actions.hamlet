@@ -1,0 +1,3 @@
+$newline never
+<a name=#{anchor $ entityKey list}>
+^{listEntry list deleteForm}
