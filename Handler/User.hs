@@ -6,12 +6,9 @@ import Data.Monoid ((<>))
 
 getUsersR :: Handler Html
 getUsersR = do
-  authId <- requireAuthId
   users <- runDB $ selectList [] [Asc UserId]
            >>= mapM userInfo
-  r <- getMessageRender
-  deleteForm <- generateFormPost userDummyForm
-  let theUsers = userTable authId r deleteForm users
+  let theUsers = userTable users
   defaultLayout $(widgetFile "users")
   where userInfo (Entity userId user) = do
           mRole <- getBy $ UniqueUserRole userId
@@ -66,8 +63,9 @@ postUserDeleteR userId = do
           setMessageI MsgDeleteUserFail
       redirect UsersR
 
-userDeleteEntry :: Entity User -> (Widget, Enctype) -> Widget
-userDeleteEntry (Entity userId user) (deleteWidget, deleteET) = do
+userDeleteEntry :: Entity User -> Widget
+userDeleteEntry (Entity userId user) = do
+  (deleteWidget, deleteET) <- handlerToWidget $ generateFormPost userDummyForm
   authId <- handlerToWidget $ requireAuthId
   modalId <- newIdent
   labelId <- newIdent
@@ -84,20 +82,20 @@ userDummyForm extra = do
                 ^{fvInput view}|]
   return (res, widget)
 
-userTable :: UserId
-          -> (AppMessage -> Text)
-          -> (Widget, Enctype)
-          -> [(UserId, User, Maybe Role)]
+userTable :: [(UserId, User, Maybe Role)]
           -> WidgetT App IO ()
-userTable authId r deleteForm =
-  buildBootstrap $ mempty
+userTable users = do
+  r <- handlerToWidget getMessageRender
+  buildBootstrap (mempty
     <> Table.text (r MsgEmailAddress) mail
-    <> Table.text (r MsgVerifiedStatus) verified
+    <> Table.text (r MsgVerifiedStatus) (r . verified)
     <> Table.widget (r MsgUserRole) role
-    <> Table.widget (r MsgUserActions) del
+    <> Table.widget (r MsgUserActions) del) users
     where mail (_, u, _) = userEmail u
           verified (_, u, _)
-                   | userVerified u = r MsgVerified
-                   | otherwise = r MsgUnverified
-          role (userId, _, mRole) = $(widgetFile "user-entry-role")
-          del (userId, user, _) = userDeleteEntry (Entity userId user) deleteForm
+                   | userVerified u = MsgVerified
+                   | otherwise = MsgUnverified
+          role (userId, _, mRole) = do
+            authId <- handlerToWidget requireAuthId
+            $(widgetFile "user-entry-role")
+          del (userId, user, _) = userDeleteEntry (Entity userId user)

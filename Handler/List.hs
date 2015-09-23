@@ -10,10 +10,7 @@ getListsR :: Handler Html
 getListsR = do
   lists <- runDB $ selectList [] [Asc MailingListName]
            >>= mapM listInfo
-  deleteForm <- generateFormPost $ listDeleteForm
-  r <- getMessageRender
-  let actions (list, _, _) = $(widgetFile "list-actions")
-  let theLists = listsTable actions r lists
+  let theLists = listsTable lists
   defaultLayout $(widgetFile "lists")
   where listInfo lst@(Entity listId _) = do
           subs <- count [MailingListUserList ==. listId]
@@ -40,9 +37,7 @@ getListR listId = do
     subs <- selectList [MailingListUserList ==. listId] [Asc MailingListUserUser]
             >>= mapM subscriber
     return (lst, subs)
-  r <- getMessageRender
-  r' <- getMessageRender
-  let theSubs = subscribersTable listId r r' subscribers
+  let theSubs = subscribersTable listId subscribers
   defaultLayout $(widgetFile "list")
   where subscriber :: Entity MailingListUser -> YesodDB App (UserId, Text, ListRole)
         subscriber (Entity _ mlu) = do
@@ -143,34 +138,35 @@ listForm mList = renderBootstrap3 BootstrapBasicForm $ MailingList
                  <*> areq langField (bfs MsgLangField) (mailingListLanguage <$> mList)
   where langField = selectField optionsEnum
 
-listsTable :: ((Entity MailingList, Int, Int) -> Widget)
-           -> (AppMessage -> Text)
-           -> [(Entity MailingList, Int, Int)]
+listsTable :: [(Entity MailingList, Int, Int)]
            -> WidgetT App IO ()
-listsTable actions r =
-  buildBootstrap $ mempty
+listsTable subscribers = do
+  r <- handlerToWidget getMessageRender
+  deleteForm <- handlerToWidget $ generateFormPost $ listDeleteForm
+  buildBootstrap (mempty
     <> Table.text (r MsgNameField) (mailingListName . lst)
     <> Table.text (r MsgDescField) (mailingListDescription . lst)
     <> Table.show (r MsgLangField) (mailingListLanguage . lst)
     <> Table.show (r MsgSubscriberCount) subs
     <> Table.show (r MsgSenderCount) auts
-    <> Table.widget (r MsgListActions) actions
+    <> Table.widget (r MsgListActions) (actions deleteForm)) subscribers
   where lst (l, _, _) = entityVal l
         subs (_, s, _) = s
         auts (_, _, a) = a
+        actions deleteForm (list, _, _) = $(widgetFile "list-actions")
 
 subscribersTable :: MailingListId
-                 -> (AppMessage -> Text)
-                 -> (ListRole -> Text)
                  -> [(UserId, Text, ListRole)]
                  -> WidgetT App IO ()
-subscribersTable listId r r' =
-  buildBootstrap $ mempty
+subscribersTable listId subs = do
+  r <- handlerToWidget getMessageRender
+  r' <- handlerToWidget getMessageRender
+  buildBootstrap (mempty
     <> Table.text (r MsgEmailAddress) mail
-    <> Table.text (r MsgRole) role'
-    <> Table.widget (r MsgSubscriberActions) actions
+    <> Table.text (r MsgRole) (r' . role')
+    <> Table.widget (r MsgSubscriberActions) actions) subs
   where mail (_, m, _) = m
-        role' (_, _, x) = r' x
+        role' (_, _, x) = x
         actions (userId, _, role) = $(widgetFile "subscriber-actions")
 
 listDeleteForm :: Html -> MForm Handler (FormResult Text, Widget)
