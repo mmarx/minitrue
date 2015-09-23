@@ -59,8 +59,7 @@ postListR listId = do
     FormSuccess list -> do
       runDB $ replace listId list
       setMessageI . MsgEditListSuccess . mailingListName $ list
-    _ -> do
-      setMessageI MsgEditListFail
+    _ -> setMessageI MsgEditListFail
   redirect $ ListR listId
 
 postListDeleteR :: MailingListId -> Handler Html
@@ -188,7 +187,7 @@ listEditor mIL = do
         Nothing -> (ListsR, MsgNewListButton)
         Just (lId, _) -> (ListR lId, MsgEditListButton)
   (editWidget, editET) <- handlerToWidget . generateFormPost . listForm $ snd <$> mIL
-  $(widgetFile "list-edit")
+  $(widgetFile "edit")
 
 messageTemplate :: MailingList -> Maybe Message
 messageTemplate list = Just Message { messageSubject = ""

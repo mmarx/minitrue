@@ -1,0 +1,6 @@
+$newline never
+<h1>_{MsgCategories}
+<div .table-responsive>
+  ^{theCategories}
+<h2>_{MsgNewCategory}
+^{edit}

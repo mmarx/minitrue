@@ -12,16 +12,14 @@ $newline never
     <ul .nav .navbar-nav>
       <li>
         <a href=@{HomeR}>_{MsgNavSubscriptions}
-      $case mRole
-        $of Just Admin
-          <li>
-            <a href=@{ListsR}>_{MsgNavLists}
-          <li>
-            <a href=@{UsersR}>_{MsgNavUsers}
-        $of Just InnerCircle
-          <li>
-            <a href=@{ListsR}>_{MsgNavLists}
-        $of _
+      $if innerCircle
+        <li>
+          <a href=@{ListsR}>_{MsgNavLists}
+        <li>
+          <a href=@{CategoriesR}>_{MsgNavCategories}
+      $if admin
+        <li>
+          <a href=@{UsersR}>_{MsgNavUsers}
     <ul .nav .navbar-nav .navbar-right>
       $maybe Entity _ auth <- mAuth
         <li .dropdown>

@@ -1,0 +1,26 @@
+$newline never
+<div .btn-toolbar>
+  <a name=#{anchor $ entityKey category}>
+  <a href=@{CategoryR $ entityKey category} .btn-sm .btn .btn-default type=button>
+    <span .glyphicon .glyphicon-wrench>
+    \ _{MsgActionEditCategory}
+  <a href=##{modalId} .btn-sm .btn .btn-danger type=button data-toggle=modal>
+    <span .glyphicon .glyphicon-trash>
+    \ _{MsgActionDeleteCategory}
+<div ##{modalId} .modal .fade tabindex=-1 role=dialog aria-labelledby=#{labelId} aria-hidden=true>
+  <div .modal-dialog>
+    <div .modal-content>
+      <div .modal-header>
+        <button type=button .close data-dismiss=modal aria-hidden=true>&times;
+        <h3 ##{labelId}>#{categoryName $ entityVal category}
+      <div .modal-body>
+        <p>_{MsgDeleteCategoryConfirm $ categoryName $ entityVal category}
+      <div .modal-footer>
+        <form .form-inline action=@{CategoryDeleteR $ entityKey category} method=post enctype=#{deleteET}>
+          ^{deleteWidget}
+          <div .btn-toolbar>
+            <button .btn .btn-default data-dismiss=modal type=button>
+              _{MsgCancelButton}
+            <button .btn .btn-danger type=submit>
+              <span .glyphicon .glyphicon-trash>
+              \ _{MsgDeleteButton}

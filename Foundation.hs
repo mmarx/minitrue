@@ -63,9 +63,10 @@ instance Yesod App where
         master <- getYesod
         mmsg <- getMessage
         mAuth <- maybeAuth
-        mRole <- getUserRole
         modalId <- newIdent
         labelId <- newIdent
+        innerCircle <- (==Authorized) <$> isInnerCircle
+        admin <- (==Authorized) <$> isAdmin
         navbar <- widgetToPageContent $(widgetFile "navbar")
 
         -- We break up the default layout into two components:

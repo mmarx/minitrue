@@ -20,7 +20,7 @@
 /event/#EventId/ EventR GET POST
 /event/#EventId/delete EventDeleteR POST
 
-/category CategoriesR GET
+/category CategoriesR GET POST
 /category/#CategoryId/ CategoryR GET POST
 /category/#CategoryId/delete CategoryDeleteR POST
 

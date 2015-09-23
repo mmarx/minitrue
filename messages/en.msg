@@ -7,6 +7,8 @@ Register: Register
 NavSubscriptions: List subscriptions
 NavLists: Manage lists
 NavUsers: Manage users
+NavCategories: Manage categories
+NavEvents: Manage events
 
 RoleNothing: (none)
 RoleConsumer: User
@@ -76,6 +78,8 @@ ActionSendMessage: send message
 ActionEditList: edit list
 ActionDeleteList: delete list
 ActionDeleteUser: delete user
+ActionEditCategory: edit category
+ActionDeleteCategory: delete category
 
 ChangeRoleButton: Change role
 CancelButton: Cancel
@@ -108,5 +112,18 @@ EventDate: Date
 EventCategory: Category
 EventTime: Time
 
+Category name@Text: Category “#{name}”
+Categories: Categories
 CategoryName: Name
 CategoryDescription: Description
+CategoryActions: Actions
+NewCategory: New Category
+NewCategoryButton: Add
+EditCategoryButton: Update
+CreateCategoryFail: Could not create category.
+CreateCategorySuccess name@Text: Category “#{name}” created.
+EditCategoryFail: Could not update category.
+EditCategorySuccess name@Text: Category “#{name}” updated.
+DeleteCategoryFail: Could not delete category.
+DeleteCategorySuccess name@Text: Category “#{name}” deleted.
+DeleteCategoryConfirm name@Text: Really delete Category “#{name}”?
