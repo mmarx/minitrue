@@ -59,7 +59,7 @@ postListR listId = do
 
 postListDeleteR :: MailingListId -> Handler Html
 postListDeleteR listId = do
-  ((listResult, _), _) <- runFormPost $ listDeleteForm
+  ((listResult, _), _) <- runFormPost $ dummyDeleteForm
   case listResult of
     FormSuccess _ -> do
       name <- runDB $ do
@@ -69,8 +69,7 @@ postListDeleteR listId = do
         delete listId
         return $ mailingListName list
       setMessageI . MsgDeleteListSuccess $ name
-    _ -> do
-      setMessageI MsgDeleteListFail
+    _ -> setMessageI MsgDeleteListFail
   redirect ListsR
 
 getSendMessageR :: MailingListId -> Handler Html
@@ -78,11 +77,10 @@ getSendMessageR listId = do
   _ <- requireAuth
   list <- runDB $ get404 listId
   (msgWidget, msgET) <- generateFormPost $ messageForm $ messageTemplate list
-  (evtWidget, evtET) <- generateFormPost $ eventForm listId Nothing
+  mEvents <- eventsTables listId >>= return . fmap snd
   cancelR <- routeAnchor ListsR listId
   defaultLayout $ do
     $(widgetFile "send-message")
-    $(fayFile "SendMessage")
 
 postSendMessageR :: MailingListId -> Handler Html
 postSendMessageR listId = do
@@ -142,7 +140,7 @@ listsTable :: [(Entity MailingList, Int, Int)]
            -> WidgetT App IO ()
 listsTable subscribers = do
   r <- handlerToWidget getMessageRender
-  deleteForm <- handlerToWidget $ generateFormPost $ listDeleteForm
+  deleteForm <- handlerToWidget $ generateFormPost $ dummyDeleteForm
   buildBootstrap (mempty
     <> Table.text (r MsgNameField) (mailingListName . lst)
     <> Table.text (r MsgDescField) (mailingListDescription . lst)
@@ -169,20 +167,12 @@ subscribersTable listId subs = do
         role' (_, _, x) = x
         actions (userId, _, role) = $(widgetFile "subscriber-actions")
 
-listDeleteForm :: Html -> MForm Handler (FormResult Text, Widget)
-listDeleteForm extra = do
-  (res, view) <- mreq hiddenField "dummy" (Just "dummy")
-  let widget = [whamlet|$newline never
-                #{extra}
-                ^{fvInput view}|]
-  return (res, widget)
-
-listEditor :: Maybe (MailingListId, MailingList) -> Widget
+listEditor :: Maybe (Entity MailingList) -> Widget
 listEditor mIL = do
   let (editAction, msgSubmitButton) = case mIL of
         Nothing -> (ListsR, MsgNewListButton)
-        Just (lId, _) -> (ListR lId, MsgEditListButton)
-  (editWidget, editET) <- handlerToWidget . generateFormPost . listForm $ snd <$> mIL
+        Just (Entity lId _) -> (ListR lId, MsgEditListButton)
+  (editWidget, editET) <- handlerToWidget . generateFormPost . listForm $ entityVal <$> mIL
   $(widgetFile "edit")
 
 messageTemplate :: MailingList -> Maybe Message

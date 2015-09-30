@@ -1,27 +1,22 @@
 $newline never
+<a name=#{anchor eventId}>
 <div .btn-toolbar>
-  <a href=@{SendMessageR listId} :not canSend:.disabled .btn-sm .btn .btn-primary type=button>
-    <span .glyphicon .glyphicon-pencil>
-    \ _{MsgActionSendMessage}
-  <a href=@{ListEventsR listId} .btn-sm .btn .btn-info type=button>
-    <span .glyphicon .glyphicon-calendar>
-    \ _{MsgActionListEvents}
-  <a href=@{ListR listId} .btn-sm .btn .btn-default type=button>
+  <a href=@{EventR eventId} .btn-sm .btn .btn-default type=button>
     <span .glyphicon .glyphicon-wrench>
-    \ _{MsgActionEditList}
+    \ _{MsgActionEditEvent}
   <a href=##{modalId} .btn-sm .btn .btn-danger type=button data-toggle=modal>
     <span .glyphicon .glyphicon-trash>
-    \ _{MsgActionDeleteList}
+    \ _{MsgActionDeleteEvent}
 <div ##{modalId} .modal .fade tabindex=-1 role=dialog aria-labelledby=#{labelId} aria-hidden=true>
   <div .modal-dialog>
     <div .modal-content>
       <div .modal-header>
         <button type=button .close data-dismiss=modal aria-hidden=true>&times;
-        <h3 ##{labelId}>#{mailingListName list}
+        <h3 ##{labelId}>#{eventName event}
       <div .modal-body>
-        <p>_{MsgDeleteListConfirm $ mailingListName $ list}
+        <p>_{MsgDeleteEventConfirm $ eventName $ event}
       <div .modal-footer>
-        <form .form-inline action=@{ListDeleteR listId} method=post enctype=#{deleteET}>
+        <form .form-inline action=@{EventDeleteR eventId} method=post enctype=#{deleteET}>
           ^{deleteWidget}
           <div .btn-toolbar>
             <button .btn .btn-default data-dismiss=modal type=button>

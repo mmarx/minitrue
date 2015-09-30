@@ -17,11 +17,13 @@
 /list/#MailingListId/demote/#UserId DemoteR POST
 /list/#MailingListId/events/ ListEventsR GET POST
 
+/event AllEventsR GET
 /event/#EventId/ EventR GET POST
 /event/#EventId/delete EventDeleteR POST
 
 /category CategoriesR GET POST
 /category/#CategoryId/ CategoryR GET POST
+/category/#CategoryId/events CategoryEventsR GET
 /category/#CategoryId/delete CategoryDeleteR POST
 
 /user/ UsersR GET

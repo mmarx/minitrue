@@ -389,6 +389,14 @@ canEditEvent eventId = do
     Nothing -> return $ Unauthorized "Event doesn't exist."
     Just evt -> canEditList $ eventList evt
 
+dummyDeleteForm :: Html -> MForm Handler (FormResult Text, Widget)
+dummyDeleteForm extra = do
+  (res, view) <- mreq hiddenField "dummy" (Just "dummy")
+  let widget = [whamlet|$newline never
+                #{extra}
+                ^{fvInput view}|]
+  return (res, widget)
+
 -- Note: previous versions of the scaffolding included a deliver function to
 -- send emails. Unfortunately, there are too many different options for us to
 -- give a reasonable default. Instead, the information is available on the

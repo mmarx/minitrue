@@ -6,4 +6,4 @@ $newline never
   ^{theSubs}
 
 <h2>_{MsgEditList}
-^{listEditor $ Just $ (listId, list)}
+^{listEditor $ Just $ (Entity listId list)}

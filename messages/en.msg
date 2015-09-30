@@ -8,7 +8,7 @@ NavSubscriptions: List subscriptions
 NavLists: Manage lists
 NavUsers: Manage users
 NavCategories: Manage categories
-NavEvents: Manage events
+NavEvents: Events
 
 RoleNothing: (none)
 RoleConsumer: User
@@ -42,6 +42,7 @@ SendMessage: Send message
 SendMessageFail: Could not send message.
 SendMessageSuccess subject@Text name@Text: Message “#{subject}” sent to “#{name}”.
 Message: Message
+MessageEvents: The following events are automatically appended to your message:
 
 NameField: Name
 DescField: Description
@@ -80,6 +81,9 @@ ActionDeleteList: delete list
 ActionDeleteUser: delete user
 ActionEditCategory: edit category
 ActionDeleteCategory: delete category
+ActionEditEvent: edit event
+ActionDeleteEvent: delete event
+ActionListEvents: list events
 
 ChangeRoleButton: Change role
 CancelButton: Cancel
@@ -108,15 +112,19 @@ LangGerman: English
 Events: Events
 EventName: Name
 EventLocation: Location
+EventDescription: Description
 EventDate: Date
 EventCategory: Category
 EventTime: Time
+EventDateTime: Time
+EventActions: Actions
 
 Category name@Text: Category “#{name}”
 Categories: Categories
 CategoryName: Name
 CategoryDescription: Description
 CategoryActions: Actions
+CategoryEvents name@Text: Events for Category “#{name}”
 NewCategory: New Category
 NewCategoryButton: Add
 EditCategoryButton: Update
@@ -127,3 +135,17 @@ EditCategorySuccess name@Text: Category “#{name}” updated.
 DeleteCategoryFail: Could not delete category.
 DeleteCategorySuccess name@Text: Category “#{name}” deleted.
 DeleteCategoryConfirm name@Text: Really delete Category “#{name}”?
+
+Event name@Text: Event “#{name}”
+ListEvents name@Text: Events for list “#{name}”
+NewEvent: New Event
+NewEventButton: Add
+EditEvent: Edit Event
+EditEventButton: Update
+CreateEventFail: Could not create event.
+CreateEventSuccess name@Text: Event “#{name}” created.
+EditEventFail: Could not update event.
+EditEventSuccess name@Text: Event “#{name}” updated.
+DeleteEventFail: Could not delete event.
+DeleteEventSuccess name@Text: Event “#{name}” deleted.
+DeleteEventConfirm name@Text: Really delete Event “#{name}”?

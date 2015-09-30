@@ -103,6 +103,7 @@ library
                  , mime-mail
                  , random
                  , time
+                 , old-locale
                  , systemd
 
 executable         minitrue

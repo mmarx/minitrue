@@ -4,16 +4,14 @@ $newline never
     _{MsgSendMessage}
     \ <small>
         _{MsgList $ mailingListName list}
-
-<h2>_{MsgEvents}
-  <form action=@{ListEventsR listId} method=post enctype=#{evtET}>
-    ^{evtWidget}
-    <div .btn-toolbar>
-      <a href=#{cancelR} .btn .btn-default type=button>_{MsgCancelButton}
-      <button .btn .btn-primary type=submit>_{MsgAddEventButton}
 <h2>_{MsgMessage}
   <form action=@{SendMessageR listId} method=post enctype=#{msgET}>
     ^{msgWidget}
+    $maybe events <- mEvents
+      <p>
+        _{MsgMessageEvents}
+      #{events}
+    $nothing
     <div .btn-toolbar>
       <a href=#{cancelR} .btn .btn-default type=button>_{MsgCancelButton}
       <button .btn .btn-primary type=submit>_{MsgSendMessageButton}

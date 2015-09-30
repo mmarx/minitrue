@@ -49,7 +49,10 @@ postCategoryR cId = do
 
 postCategoryDeleteR :: CategoryId -> Handler Html
 postCategoryDeleteR categoryId = do
-  runDB $ get404 categoryId >> delete categoryId
+  runDB $ do
+    _ <- get404 categoryId
+    deleteWhere [EventCategory ==. categoryId]
+    delete categoryId
   redirect CategoriesR
 
 categoryForm :: Maybe Category -> Form Category

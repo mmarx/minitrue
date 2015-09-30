@@ -1,0 +1,5 @@
+$newline never
+<h1>_{MsgEvent $ eventName $ event}
+
+<h2>_{MsgEditEvent}
+^{eventEditor (eventList event) $ Just (Entity eventId event)}

@@ -1,0 +1,9 @@
+$newline never
+<h1>_{MsgEvents}
+
+<h2>_{MsgListEvents $ mailingListName list}
+<div .table-responsive>
+  ^{theEvents}
+
+<h2>_{MsgNewEvent}
+^{eventEditor listId Nothing}

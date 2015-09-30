@@ -1,0 +1,12 @@
+$newline never
+<style media="screen" type="text/css">
+  #{preEscapedToHtml $ renderCss $ style dummy}
+<table>
+  $forall (Entity _ event) <- events
+    <tr>
+      <td>
+        #{formatDateTime lang event}
+      <td>
+        #{eventLocation event}
+      <td>
+        #{eventName event}

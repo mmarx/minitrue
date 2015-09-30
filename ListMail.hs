@@ -1,6 +1,7 @@
 module ListMail where
 
 import Import hiding (toLower)
+import Handler.Events (eventsTables)
 import Data.Char
 import qualified Data.Text as T
 
@@ -21,6 +22,7 @@ sendMessageToListUser :: Message -> MailingListId -> Entity MailingListUser -> H
 sendMessageToListUser msg listId (Entity _ mLU) = do
   settings <- appSettings <$> getYesod
   renderUrl <- getUrlRender
+  mEvents <- eventsTables listId
   (user, list) <- runDB $ do
     usr <- get404 $ mailingListUserUser mLU
     lst <- get404 listId
@@ -43,6 +45,6 @@ sendMessageToListUser msg listId (Entity _ mLU) = do
                     , ("List-Unsubscribe", unsubscribeR key)
                     ]
       ad = Address Nothing
-      message' (addr, key) = mailFromToList sender (ad addr) (unsubscribeR key) subject body
+      message' (addr, key) = mailFromToList sender (ad addr) (unsubscribeR key) mEvents subject body
       message ak@(_, key) = sendMail $ addHeaders (headers key) $ message' ak
   message (userEmail user, mailingListUserUnsubkey mLU)

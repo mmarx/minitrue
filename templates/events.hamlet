@@ -1,0 +1,16 @@
+$newline never
+$maybe category <- mCategory
+  <h1>_{MsgCategoryEvents $ categoryName category}
+$nothing
+  <h1>_{MsgEvents}
+<ul>
+   $forall (lang, (Entity eventId event)) <- events
+     <li>
+       <h2>#{eventName event}
+        <p>
+          <a name=#{anchor eventId}>
+          <strong>#{formatDateTime lang event}
+        <p>
+          <em>#{eventLocation event}
+        <div>
+          #{eventDescription event}

@@ -11,6 +11,8 @@ $newline never
   <div .navbar-collapse .collapse .navbar-minitrue-collapse>
     <ul .nav .navbar-nav>
       <li>
+        <a href=@{AllEventsR}>_{MsgNavEvents}
+      <li>
         <a href=@{HomeR}>_{MsgNavSubscriptions}
       $if innerCircle
         <li>

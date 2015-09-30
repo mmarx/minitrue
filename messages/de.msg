@@ -7,6 +7,8 @@ Register: Registrieren
 NavSubscriptions: Listenabonnements
 NavLists: Listen verwalten
 NavUsers: Benutzer verwalten
+NavCategories: Kategorien verwalten
+NavEvents: Termine
 
 RoleNothing: (keine)
 RoleConsumer: Benutzer
@@ -40,6 +42,7 @@ SendMessage: Nachricht versenden
 SendMessageFail: Die Nachricht konnte nicht versendet werden.
 SendMessageSuccess subject name: Die Nachricht „#{subject}“ wurde an die Liste „#{name}“ versendet.
 Message: Nachricht
+MessageEvents: Die folgenden Termine werden automatisch an ihre Nachricht angehängt:
 
 NameField: Name
 DescField: Beschreibung
@@ -76,6 +79,11 @@ ActionSendMessage: Nachricht verfassen
 ActionEditList: Mailingliste bearbeiten
 ActionDeleteList: Mailingliste löschen
 ActionDeleteUser: Benutzer löschen
+ActionEditCategory: Kategorie bearbeiten
+ActionDeleteCategory: Kategorie löschen
+ActionEditEvent: Termin bearbeiten
+ActionDeleteEvent: Termin löschen
+ActionListEvents: Listentermine
 
 ChangeRoleButton: Rolle ändern
 CancelButton: Abbrechen
@@ -91,6 +99,7 @@ AddEventButton: Hinzufügen
 
 UnsubscribeFail name: Ungültiger Schlüssel — Sie konnten nicht aus der Mailingliste „#{name}“ ausgetragen werden.
 UnsubscribeSuccess name: Sie wurden aus der Mailingliste „#{name}“ ausgetragen.
+SubscribeSuccess name: Sie haben die Liste „#{name}“ abboniert.
 Unsubscribe: Mailingliste abbestellen
 UnsubscribeConfirm name: Wollen Sie sich wirklich aus der Mailingliste „#{name}“ austragen?
 
@@ -103,9 +112,40 @@ LangGerman: Deutsch
 Events: Veranstaltungen
 EventName: Name
 EventLocation: Veranstaltungsort
+EventDescription: Beschreibung
 EventDate: Datum
 EventCategory: Kategorie
 EventTime: Veranstaltungsbeginn
+EventDateTime: Veranstaltungsbeginn
+EventActions: Aktionen
 
+Category name: Kategorie „#{name}“
+Categories: Kategorien
 CategoryName: Name
 CategoryDescription: Beschreibung
+CategoryActions: Aktionen
+CategoryEvents name: Termine in der Kategorie „#{name}“
+NewCategory: Kategorie hinzufügen
+NewCategoryButton: Hinzufügen
+EditCategoryButton: Aktualisieren
+CreateCategoryFail: Die Kategorie konnte nicht erstellt werden.
+CreateCategorySuccess name: Kategorie „#{name}“ erstellt.
+EditCategoryFail: Die Kategorie konnte nicht aktualisiert werden.
+EditCategorySuccess name: Kategorie „#{name}“ aktualisiert.
+DeleteCategoryFail: Die Kategorie konnte nicht gelöscht werden.
+DeleteCategorySuccess name: Kategorie „#{name}“ gelöscht.
+DeleteCategoryConfirm name: Möchten Sie die Kategorie „#{name}“ wirklich löschen?
+
+Event name: Termin „#{name}“
+ListEvents name: Termine für Liste „#{name}“
+NewEvent: Termin hinzufügen
+NewEventButton: Hinzufügen
+EditEvent: Termin bearbeiten
+EditEventButton: Aktualisieren
+CreateEventFail: Termin konnte nicht erstellt werden.
+CreateEventSuccess name: Termin „#{name}“ erstellt.
+EditEventFail: Termin konnte nicht aktualisiert werden.
+EditEventSuccess name: Termin „#{name}“ aktualisiert.
+DeleteEventFail: Termin konnte nicht gelöscht werden.
+DeleteEventSuccess name: Termin „#{name}“ gelöscht.
+DeleteEventConfirm name: Möchten Sie den Termin „#{name}“ wirklich löschen?

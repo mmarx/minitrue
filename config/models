@@ -37,6 +37,7 @@ Category json
 Event json
     name Text
     location Text
+    description Textarea
     date Day
     time TimeOfDay
     list MailingListId

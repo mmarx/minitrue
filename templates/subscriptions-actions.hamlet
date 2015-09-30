@@ -9,6 +9,10 @@
       <a href=@{SendMessageR listId} :not canSend:.disabled .btn-sm .btn .btn-primary type=button>
         <span .glyphicon .glyphicon-pencil>
         \ _{MsgActionSendMessage}
+    $if canEdit mRole
+      <a href=@{ListEventsR listId} .btn-sm .btn .btn-info type=button>
+        <span .glyphicon .glyphicon-calendar>
+        \ _{MsgActionListEvents}
   $nothing
     <form .form-inline method=post action=@{SubscribeR listId}>
       <button .btn-sm .btn .btn-success type=submit>
