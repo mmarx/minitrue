@@ -37,6 +37,7 @@ data AuthMessage = MsgResetButton
 instance YesodAuthEmail master => RenderMessage master AuthMessage where
   renderMessage _ ("en":_) = renderEnglish
   renderMessage _ ("de":_) = renderGerman
+  renderMessage _ ("de-DE":_) = renderGerman
   renderMessage master (_:langs) = renderMessage master langs
   renderMessage _ _ = renderDefault
 

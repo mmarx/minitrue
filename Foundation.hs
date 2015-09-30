@@ -184,8 +184,9 @@ instance YesodAuth App where
 
     authHttpManager = error "No HTTP manager neccessary."
 
-    renderAuthMessage _ ("en":_) = AuthMessage.englishMessage
     renderAuthMessage _ ("de":_) = germanAuthMessage
+    renderAuthMessage _ ("de-DE":_) = germanAuthMessage
+    renderAuthMessage _ ("en":_) = AuthMessage.englishMessage
     renderAuthMessage master (_:langs) = renderAuthMessage master langs
     renderAuthMessage _ _ = AuthMessage.defaultMessage
 
