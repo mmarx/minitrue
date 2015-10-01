@@ -14,7 +14,7 @@ addSubscription userId listId = do
   list <- get404 listId
   master <- lift getYesod
   unsubkey <- liftIO $ randomKey master
-  let mlU = MailingListUser userId listId Receiver unsubkey
+  let mlU = MailingListUser userId listId Receiver Unsupervised unsubkey
   eMluId <- insertBy mlU
   lift $ setMessageI $ MsgSubscribeSuccess $ mailingListName list
   case eMluId of

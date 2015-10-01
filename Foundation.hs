@@ -99,6 +99,8 @@ instance Yesod App where
     isAuthorized (UnsubscribeR listId) _ = canUnsubscribeFromList listId
     isAuthorized (PromoteR listId _) _ = canEditList listId
     isAuthorized (DemoteR listId _) _ = canEditList listId
+    isAuthorized (SuperviseR listId _) _ = canEditList listId
+    isAuthorized (UnsuperviseR listId _) _ = canEditList listId
     isAuthorized (UsersR) _ = isAdmin
     isAuthorized (UserDeleteR userId) _ = canDeleteUser userId
     isAuthorized (RoleR userId role) _ = canSetRole userId role
@@ -283,6 +285,9 @@ instance RenderMessage App (Maybe ListRole) where
 instance RenderMessage App Language where
   renderMessage master langs = renderMessage master langs . languageMessage
 
+instance RenderMessage App Supervision where
+  renderMessage master langs = renderMessage master langs . supervisionMessage
+
 unsafeHandler :: App -> Handler a -> IO a
 unsafeHandler = Unsafe.fakeHandlerGetLogger appLogger
 
@@ -301,6 +306,10 @@ languageMessage :: Language -> AppMessage
 languageMessage English = MsgLangEnglish
 languageMessage German = MsgLangGerman
 
+supervisionMessage :: Supervision -> AppMessage
+supervisionMessage Supervised = MsgSupervised
+supervisionMessage Unsupervised = MsgUnsupervised
+
 isLoggedIn :: Handler AuthResult
 isLoggedIn = do
   mUserId <- maybeAuthId
@@ -317,14 +326,14 @@ getUserRole = do
       userRole <- runDB $ getBy $ UniqueUserRole userId
       return $ fmap (userRoleRole . entityVal) userRole
 
-getListUserRole :: MailingListId -> Handler (Maybe ListRole)
+getListUserRole :: MailingListId -> Handler (Maybe (ListRole, Supervision))
 getListUserRole listId = do
   mUserId <- maybeAuthId
   case mUserId of
     Nothing -> return Nothing
     Just userId -> do
       listRole <- runDB $ getBy $ UniqueListUser userId listId
-      return $ fmap (mailingListUserRole . entityVal) listRole
+      return $ fmap ((mailingListUserRole &&& mailingListUserSupervised) . entityVal) listRole
 
 isAdmin :: Handler AuthResult
 isAdmin = do
@@ -345,16 +354,16 @@ isInnerCircle = do
 
 canEditList :: MailingListId -> Handler AuthResult
 canEditList listId = do
-  role <- getListUserRole listId
-  case role of
-    Just Sender -> return Authorized
+  rs <- getListUserRole listId
+  case rs of
+    Just (Sender, Unsupervised) -> return Authorized
     _ -> isInnerCircle
 
 canSendToList :: MailingListId -> Handler AuthResult
 canSendToList listId = do
-  role <- getListUserRole listId
-  case role of
-    Just Sender -> return Authorized
+  rs <- getListUserRole listId
+  case rs of
+    Just (Sender, _) -> return Authorized
     _ -> return $ Unauthorized "Must be an Author."
 
 canSubscribeToList :: MailingListId -> Handler AuthResult

@@ -39,12 +39,13 @@ getListR listId = do
     return (lst, subs)
   let theSubs = subscribersTable listId subscribers
   defaultLayout $(widgetFile "list")
-  where subscriber :: Entity MailingListUser -> YesodDB App (UserId, Text, ListRole)
+  where subscriber :: Entity MailingListUser -> YesodDB App (UserId, Text, ListRole, Supervision)
         subscriber (Entity _ mlu) = do
           let userId = mailingListUserUser mlu
               role = mailingListUserRole mlu
+              supervised = mailingListUserSupervised mlu
           email <- get404 userId >>= return . userEmail
-          return (userId, email, role)
+          return (userId, email, role, supervised)
 
 postListR :: MailingListId -> Handler Html
 postListR listId = do
@@ -84,36 +85,65 @@ getSendMessageR listId = do
 
 postSendMessageR :: MailingListId -> Handler Html
 postSendMessageR listId = do
+  void $ runDB $ get404 listId
+  ((msgResult, _), _) <- runFormPost . messageForm $ Nothing
+  supervised <- runDB $ do
+    (Entity authId _) <- lift $ requireAuth
+    mlu <- getBy404 $ UniqueListUser authId listId
+    return $ mailingListUserSupervised . entityVal $ mlu
+  case msgResult of
+    FormSuccess msg -> do
+      case supervised of
+        Supervised -> sendMessage listId msg
+        Unsupervised -> queueMessage listId msg
+      redirect HomeR
+    _ -> do
+      case supervised of
+        Supervised -> setMessageI MsgQueueMessageFail
+        Unsupervised -> setMessageI MsgSendMessageFail
+      redirect $ SendMessageR listId
+
+prepareMessage :: MailingListId
+               -> Message
+               -> Handler (AuthId App,UTCTime,MailingList,Text,Textarea)
+prepareMessage listId msg = do
   authId <- requireAuthId
   time <- lift getCurrentTime
   list <- runDB $ get404 listId
-  ((msgResult, _), _) <- runFormPost . messageForm $ Nothing
+  let subject = messageSubject msg
+      body = messageBody msg
+  return (authId, time, list, subject, body)
 
-  case msgResult of
-    FormSuccess msg -> do
-      let subject = messageSubject msg
-          body = messageBody msg
-      _ <- runDB $ insert $ Archive authId listId subject body time
-      sendMessageToList msg listId
-      setMessageI $ MsgSendMessageSuccess (messageSubject msg) $ mailingListName list
-      redirect HomeR
-    _ -> do
-      setMessageI MsgSendMessageFail
-      redirect $ SendMessageR listId
+sendMessage :: MailingListId -> Message -> Handler ()
+sendMessage listId msg = do
+  (authId, time, list, subject, body) <- prepareMessage listId msg
+  void $ runDB $ insert $ Archive authId listId subject body time
+  sendMessageToList msg listId
+  setMessageI $ MsgSendMessageSuccess subject $ mailingListName list
+
+queueMessage :: MailingListId -> Message -> Handler ()
+queueMessage listId msg = do
+  (authId, time, list, subject, body) <- prepareMessage listId msg
+  void $ runDB $ insert $ Queue authId listId subject body time
+  setMessageI $ MsgQueueMessageSuccess subject $ mailingListName list
+
+updateMailingListUser :: [Update MailingListUser] -> MailingListId -> UserId ->  Handler Html
+updateMailingListUser upd listId userId = do
+  runDB $ (getBy404 $ UniqueListUser userId listId)
+             >>= \(Entity mluId _) -> update mluId upd
+  redirect $ ListR listId
 
 postPromoteR :: MailingListId -> UserId -> Handler Html
-postPromoteR listId userId = do
-  runDB $ do
-    (Entity mluId _) <- getBy404 $ UniqueListUser userId listId
-    update mluId [MailingListUserRole =. Sender]
-  redirect $ ListR listId
+postPromoteR = updateMailingListUser [MailingListUserRole =. Sender]
 
 postDemoteR :: MailingListId -> UserId -> Handler Html
-postDemoteR listId userId = do
-  runDB $ do
-    (Entity mluId _) <- getBy404 $ UniqueListUser userId listId
-    update mluId [MailingListUserRole =. Receiver]
-  redirect $ ListR listId
+postDemoteR = updateMailingListUser [MailingListUserRole =. Receiver]
+
+postSuperviseR :: MailingListId -> UserId -> Handler Html
+postSuperviseR = updateMailingListUser [MailingListUserSupervised =. Supervised]
+
+postUnsuperviseR :: MailingListId -> UserId -> Handler Html
+postUnsuperviseR = updateMailingListUser [MailingListUserSupervised =. Unsupervised]
 
 listEntry :: Entity MailingList -> (Widget, Enctype) -> Widget
 listEntry (Entity listId list) (deleteWidget, deleteET) = do
@@ -154,18 +184,21 @@ listsTable subscribers = do
         actions deleteForm (list, _, _) = $(widgetFile "list-actions")
 
 subscribersTable :: MailingListId
-                 -> [(UserId, Text, ListRole)]
+                 -> [(UserId, Text, ListRole, Supervision)]
                  -> WidgetT App IO ()
 subscribersTable listId subs = do
   r <- handlerToWidget getMessageRender
   r' <- handlerToWidget getMessageRender
+  r'' <- handlerToWidget getMessageRender
   buildBootstrap (mempty
     <> Table.text (r MsgEmailAddress) mail
     <> Table.text (r MsgRole) (r' . role')
+    <> Table.text (r MsgSupervision) (r'' . super)
     <> Table.widget (r MsgSubscriberActions) actions) subs
-  where mail (_, m, _) = m
-        role' (_, _, x) = x
-        actions (userId, _, role) = $(widgetFile "subscriber-actions")
+  where mail (_, m, _, _) = m
+        role' (_, _, x, _) = x
+        super (_, _, _, y) = y
+        actions (userId, _, role, supervised) = $(widgetFile "subscriber-actions")
 
 listEditor :: Maybe (Entity MailingList) -> Widget
 listEditor mIL = do

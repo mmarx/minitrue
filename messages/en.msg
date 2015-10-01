@@ -149,3 +149,13 @@ EditEventSuccess name@Text: Event “#{name}” updated.
 DeleteEventFail: Could not delete event.
 DeleteEventSuccess name@Text: Event “#{name}” deleted.
 DeleteEventConfirm name@Text: Really delete Event “#{name}”?
+
+Supervision: Supervision
+Supervise: Supervise
+Unsupervise: Unsupervise
+Supervised: Supervised
+Unsupervised: Unsupervised
+
+QueueMessage: Postpone message
+QueueMessageFail: Could not enqueue message.
+QueueMessageSuccess subject@Text name@Text: Message “#{subject}” enqueued to “#{name}”.

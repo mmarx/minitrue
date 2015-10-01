@@ -1,12 +1,27 @@
 $newline never
-$case role
-  $of Receiver
-    <form .form-inline method=post action=@{PromoteR listId userId}>
-      <button .btn-sm .btn .btn-success type=submit>
-        <span .glyphicon .glyphicon-comment>
-        \ _{MsgPromoteSubscriber}
-  $of Sender
-    <form .form-inline method=post action=@{DemoteR listId userId}>
-      <button .btn-sm .btn .btn-danger type=submit>
-        <span .glyphicon .glyphicon-book>
-        \ _{MsgDemoteSubscriber}
+<div .btn-toolbar>
+  $case role
+    $of Receiver
+      <div .btn-group>
+        <form .form-inline method=post action=@{PromoteR listId userId}>
+          <button .btn-sm .btn .btn-success type=submit>
+            <span .glyphicon .glyphicon-comment>
+            \ _{MsgPromoteSubscriber}
+    $of Sender
+      <div .btn-group>
+        <form .form-inline method=post action=@{DemoteR listId userId}>
+          <button .btn-sm .btn .btn-danger type=submit>
+            <span .glyphicon .glyphicon-book>
+            \ _{MsgDemoteSubscriber}
+      <div .btn-group>
+        $case supervised
+          $of Supervised
+            <form .form-inline method=post action=@{UnsuperviseR listId userId}>
+              <button .btn-sm .btn .btn-info type=submit>
+                <span .glyphicon .glyphicon-sunglasses>
+                \ _{MsgUnsupervise}
+          $of Unsupervised
+            <form .form-inline method=post action=@{SuperviseR listId userId}>
+              <button .btn-sm .btn .btn-warning type=submit>
+                <span .glyphicon .glyphicon-sunglasses>
+                \ _{MsgSupervise}

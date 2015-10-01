@@ -16,9 +16,12 @@ data Role = Consumer | InnerCircle | Admin
           deriving (Read, Show, Eq, Enum, Bounded)
 data ListRole = Receiver | Sender
               deriving (Read, Show, Eq, Enum, Bounded)
+data Supervision = Supervised | Unsupervised
+                 deriving (Read, Show, Eq, Enum, Bounded)
 
 derivePersistField "Role"
 derivePersistField "ListRole"
+derivePersistField "Supervision"
 
 instance PathPiece Role where
   toPathPiece = toPathPiece . show

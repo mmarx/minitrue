@@ -15,6 +15,8 @@
 /list/#MailingListId/unsubscribe/#Text UnsubscribeDirectlyR GET POST
 /list/#MailingListId/promote/#UserId PromoteR POST
 /list/#MailingListId/demote/#UserId DemoteR POST
+/list/#MailingListId/supervise/#UserId SuperviseR POST
+/list/#MailingListId/unsupervise/#UserId UnsuperviseR POST
 /list/#MailingListId/events/ ListEventsR GET POST
 
 /event AllEventsR GET

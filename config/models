@@ -20,10 +20,17 @@ MailingListUser
     user UserId
     list MailingListId
     role ListRole
+    supervised Supervision default="'Unsupervised'"
     unsubkey Text
     UniqueListUser user list
     UniqueUnsubscribe unsubkey list
 Archive
+    author UserId
+    list MailingListId
+    subject Text
+    body Textarea
+    timestamp UTCTime
+Queue
     author UserId
     list MailingListId
     subject Text
