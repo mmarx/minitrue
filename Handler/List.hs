@@ -107,8 +107,8 @@ sendOrQueueMessage :: Maybe Text
                    -> MailingListId
                    -> Message
                    -> Handler ()
-sendOrQueueMessage (Just _) _ = queueMessage
-sendOrQueueMessage Nothing Supervised = queueMessage
+sendOrQueueMessage (Just _) _ = queueMessage False
+sendOrQueueMessage Nothing Supervised = queueMessage True
 sendOrQueueMessage Nothing Unsupervised = sendMessage
 
 prepareMessage :: MailingListId
@@ -129,10 +129,11 @@ sendMessage listId msg = do
   sendMessageToList msg listId
   setMessageI $ MsgSendMessageSuccess subject $ mailingListName list
 
-queueMessage :: MailingListId -> Message -> Handler ()
-queueMessage listId msg = do
+queueMessage :: Bool -> MailingListId -> Message -> Handler ()
+queueMessage supervision listId msg = do
   (authId, time, list, subject, body) <- prepareMessage listId msg
-  void $ runDB $ insert $ Queue authId listId subject body time
+  queueId <- runDB $ insert $ Queue authId listId subject body time
+  when supervision $ sendPendingNoticeToList queueId listId
   setMessageI $ MsgQueueMessageSuccess subject $ mailingListName list
 
 updateMailingListUser :: [Update MailingListUser] -> MailingListId -> UserId ->  Handler Html

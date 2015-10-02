@@ -18,6 +18,22 @@ sendMessageToList msg listId = runDB $ do
   addrs <- selectList [MailingListUserList ==. listId] []
   lift $ mapM_ (sendMessageToListUser msg listId) addrs
 
+sendPendingNoticeToList :: QueueId -> MailingListId -> Handler ()
+sendPendingNoticeToList queueId listId = do
+  r <- getMessageRender
+  runDB $ do
+    (Queue authorId _ subject body _) <- get404 queueId
+    author <- get404 authorId
+    addrs <- selectList [ MailingListUserList ==. listId
+                        , MailingListUserRole ==. Sender
+                        , MailingListUserSupervised ==. Unsupervised
+                        ] []
+    let msg' = Message
+                 { messageSubject = r $ MsgQueuedMailNotification subject $ userEmail author
+                 , messageBody = body
+                 }
+    lift $ mapM_ (sendMessageToListUser msg' listId) addrs
+
 sendMessageToListUser :: Message -> MailingListId -> Entity MailingListUser -> Handler ()
 sendMessageToListUser msg listId (Entity _ mLU) = do
   settings <- appSettings <$> getYesod
