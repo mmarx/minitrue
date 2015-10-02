@@ -87,15 +87,14 @@ postSendMessageR :: MailingListId -> Handler Html
 postSendMessageR listId = do
   void $ runDB $ get404 listId
   ((msgResult, _), _) <- runFormPost . messageForm $ Nothing
+  isPostponement <- runInputPost $ iopt textField "postpone"
   supervised <- runDB $ do
     (Entity authId _) <- lift $ requireAuth
     mlu <- getBy404 $ UniqueListUser authId listId
     return $ mailingListUserSupervised . entityVal $ mlu
   case msgResult of
     FormSuccess msg -> do
-      case supervised of
-        Supervised -> sendMessage listId msg
-        Unsupervised -> queueMessage listId msg
+      sendOrQueueMessage isPostponement supervised listId msg
       redirect HomeR
     _ -> do
       case supervised of
@@ -103,9 +102,18 @@ postSendMessageR listId = do
         Unsupervised -> setMessageI MsgSendMessageFail
       redirect $ SendMessageR listId
 
+sendOrQueueMessage :: Maybe Text
+                   -> Supervision
+                   -> MailingListId
+                   -> Message
+                   -> Handler ()
+sendOrQueueMessage (Just _) _ = queueMessage
+sendOrQueueMessage Nothing Supervised = queueMessage
+sendOrQueueMessage Nothing Unsupervised = sendMessage
+
 prepareMessage :: MailingListId
                -> Message
-               -> Handler (AuthId App,UTCTime,MailingList,Text,Textarea)
+               -> Handler (AuthId App, UTCTime, MailingList, Text, Textarea)
 prepareMessage listId msg = do
   authId <- requireAuthId
   time <- lift getCurrentTime

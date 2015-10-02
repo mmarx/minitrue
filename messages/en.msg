@@ -159,3 +159,4 @@ Unsupervised: Unsupervised
 QueueMessage: Postpone message
 QueueMessageFail: Could not enqueue message.
 QueueMessageSuccess subject@Text name@Text: Message “#{subject}” enqueued to “#{name}”.
+PostponeMessageButton: Postpone message
