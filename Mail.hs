@@ -11,7 +11,6 @@ module Mail
        ) where
 
 import Prelude
-import Control.Applicative ((<$>))
 import Data.Monoid ((<>))
 import Data.Text
 import Network.Mail.Mime (Mail (mailHeaders))

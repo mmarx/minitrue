@@ -3,7 +3,7 @@ license:           GPL-3
 license-file:      LICENSE
 author:            Maximilian Marx
 maintainer:        mmarx@wh2.tu-dresden.de
-copyright:         (c) 2013, 2015 Maximilian Marx
+copyright:         (c) 2013, 2015, 2016 Maximilian Marx
 version:           0.0.9
 cabal-version:     >= 1.8
 build-type:        Simple
@@ -103,7 +103,6 @@ library
                  , mime-mail
                  , random
                  , time
-                 , old-locale
                  , systemd
 
 executable         minitrue

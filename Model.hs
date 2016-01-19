@@ -22,7 +22,6 @@ import Languages
 share [mkPersist sqlSettings, mkMigrate "migrateAll"]
     $(persistFileWith lowerCaseSettings "config/models")
 
-$(deriveJSON defaultOptions ''Day)
 $(deriveJSON defaultOptions ''TimeOfDay)
 
 data Message = Message { messageSubject :: Text
