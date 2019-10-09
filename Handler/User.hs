@@ -1,7 +1,6 @@
 module Handler.User where
 
 import Import hiding ((<>))
-import qualified Yesod.Table as Table
 import Data.Monoid ((<>))
 
 getUsersR :: Handler Html
@@ -82,19 +81,24 @@ userDummyForm extra = do
                 ^{fvInput view}|]
   return (res, widget)
 
+userColonnade :: (AppMessage -> Cell App) -> Colonnade Headed (UserId, User, Maybe Role) (Cell App)
+userColonnade r = headed (r MsgEmailAddress) (textCell . mail)
+                  <> headed (r MsgVerifiedStatus) (r . verified)
+                  <> headed (r MsgUserRole) (cell . role)
+                  <> headed (r MsgUserActions) (cell . del)
+  where mail (_, u, _) = userEmail u
+        verified (_, u, _)
+          | userVerified u = MsgVerified
+          | otherwise = MsgUnverified
+        role (userId, _, mRole) = do
+          authId <- handlerToWidget requireAuthId
+          $(widgetFile "user-entry-role")
+        del (userId, user, _) = userDeleteEntry (Entity userId user)
+
+
 userTable :: [(UserId, User, Maybe Role)] -> WidgetFor App ()
 userTable users = do
   r <- handlerToWidget getMessageRender
-  buildBootstrap (mempty
-    <> Table.text (r MsgEmailAddress) mail
-    <> Table.text (r MsgVerifiedStatus) (r . verified)
-    <> Table.widget (r MsgUserRole) role
-    <> Table.widget (r MsgUserActions) del) users
-    where mail (_, u, _) = userEmail u
-          verified (_, u, _)
-                   | userVerified u = MsgVerified
-                   | otherwise = MsgUnverified
-          role (userId, _, mRole) = do
-            authId <- handlerToWidget requireAuthId
-            $(widgetFile "user-entry-role")
-          del (userId, user, _) = userDeleteEntry (Entity userId user)
+  encodeCellTable [class_ "table table-striped"]
+    (userColonnade $ textCell . r)
+    users

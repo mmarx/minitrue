@@ -1,7 +1,6 @@
 module Handler.Home where
 
 import Import hiding ((<>))
-import qualified Yesod.Table as Table
 import Data.Monoid ((<>))
 
 getStatus :: UserId -> Entity MailingList -> YesodDB App (MailingListId, MailingList, Maybe ListRole)
@@ -24,18 +23,26 @@ getHomeR = do
       theSubscriptions = subscriptionsTable canEdit lists
   defaultLayout $(widgetFile "subscriptions")
 
-subscriptionsTable :: (Maybe ListRole -> Bool)
-                   -> [(MailingListId, MailingList, Maybe ListRole)]
-                   -> WidgetFor App ()
+type Subscription = (MailingListId, MailingList, Maybe ListRole)
+type CanEdit = Maybe ListRole -> Bool
+
+subscriptionActions :: CanEdit -> Subscription -> WidgetFor App ()
+subscriptionActions canEdit (listId, _, mRole) = $(widgetFile "subscriptions-actions")
+
+subscriptionsColonnade :: CanEdit -> (AppMessage -> Cell App) -> (Maybe ListRole -> Text)
+                       -> Colonnade Headed Subscription (Cell App)
+subscriptionsColonnade canEdit r r' = headed (r MsgNameField) name
+                                   <> headed (r MsgDescField) desc
+                                   <> headed (r MsgSubscriptions) role
+                                   <> headed (r MsgListActions) (cell . subscriptionActions canEdit)
+  where name (_, l, _) = textCell $ mailingListName l
+        desc (_, l, _) = textCell $ mailingListDescription l
+        role (_, _, x) = textCell $ r' $ x
+
+subscriptionsTable :: CanEdit -> [Subscription] -> WidgetFor App ()
 subscriptionsTable canEdit subs = do
   r <- handlerToWidget getMessageRender
   r' <- handlerToWidget getMessageRender
-  buildBootstrap (mempty
-    <> Table.text (r MsgNameField) name
-    <> Table.text (r MsgDescField) desc
-    <> Table.text (r MsgSubscriptions) (r' . role)
-    <> Table.widget (r MsgListActions) actions) subs
-  where name (_, l, _) = mailingListName l
-        desc (_, l, _) = mailingListDescription l
-        role (_, _, x) = x
-        actions (listId, _, mRole) = $(widgetFile "subscriptions-actions")
+  encodeCellTable [class_ "table table-striped"]
+    (subscriptionsColonnade canEdit (textCell . r) r')
+    subs

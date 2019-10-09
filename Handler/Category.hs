@@ -1,7 +1,6 @@
 module Handler.Category where
 
 import Import hiding ((<>))
-import qualified Yesod.Table as Table
 import Data.Monoid ((<>))
 
 getCategoriesR :: Handler Html
@@ -74,16 +73,22 @@ categoryDeleteForm extra = do
                 ^{fvInput view}|]
   return (res, widget)
 
+categoryActions :: Entity Category -> WidgetFor App ()
+categoryActions category = do
+  modalId <- newIdent
+  labelId <- newIdent
+  (deleteWidget, deleteET) <- handlerToWidget $ generateFormPost $ categoryDeleteForm
+  $(widgetFile "category-actions")
+
+categoryColonnade :: (AppMessage -> Cell App) -> Colonnade Headed (Entity Category) (Cell App)
+categoryColonnade r = headed (r MsgNameField) (textCell . categoryName . entityVal)
+                      <> headed (r MsgDescField) (textCell . categoryDescription . entityVal)
+                      <> headed (r MsgCategoryActions) (cell . categoryActions)
+
 categoryTable :: [Entity Category]
               -> WidgetFor App ()
 categoryTable cats = do
   r <- handlerToWidget getMessageRender
-  buildBootstrap (mempty
-    <> Table.text (r MsgNameField) (categoryName . entityVal)
-    <> Table.text (r MsgDescField) (categoryDescription . entityVal)
-    <> Table.widget (r MsgCategoryActions) actions) cats
-  where actions category = do
-          modalId <- newIdent
-          labelId <- newIdent
-          (deleteWidget, deleteET) <- handlerToWidget $ generateFormPost $ categoryDeleteForm
-          $(widgetFile "category-actions")
+  encodeCellTable [class_ "table table-striped"]
+    (categoryColonnade $ textCell . r)
+    cats

@@ -10,7 +10,7 @@ $newline never
     $maybe events <- mEvents
       <p>
         _{MsgMessageEvents}
-      #{events}
+      #{preEscapedToHtml events}
     $nothing
     <div .btn-toolbar>
       <a href=#{cancelR} .btn .btn-default type=button>_{MsgCancelButton}

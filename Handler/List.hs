@@ -3,8 +3,8 @@ module Handler.List where
 import Import hiding ((<>))
 import Handler.Events
 import ListMail
-import qualified Yesod.Table as Table
 import Data.Monoid ((<>))
+import Text.Blaze.Html (preEscapedToHtml)
 
 getListsR :: Handler Html
 getListsR = do
@@ -136,22 +136,34 @@ listForm mList = renderBootstrap3 BootstrapBasicForm $ MailingList
                  <*> areq langField (bfs MsgLangField) (mailingListLanguage <$> mList)
   where langField = selectField optionsEnum
 
-listsTable :: [(Entity MailingList, Int, Int)]
-           -> WidgetFor App ()
-listsTable subscribers = do
-  r <- handlerToWidget getMessageRender
-  deleteForm <- handlerToWidget $ generateFormPost $ dummyDeleteForm
-  buildBootstrap (mempty
-    <> Table.text (r MsgNameField) (mailingListName . lst)
-    <> Table.text (r MsgDescField) (mailingListDescription . lst)
-    <> Table.show (r MsgLangField) (mailingListLanguage . lst)
-    <> Table.show (r MsgSubscriberCount) subs
-    <> Table.show (r MsgSenderCount) auts
-    <> Table.widget (r MsgListActions) (actions deleteForm)) subscribers
+listsColonnade :: (AppMessage -> Cell App) -> (Widget, Enctype) -> Colonnade Headed (Entity MailingList, Int, Int) (Cell App)
+listsColonnade r theDeleteForm = headed (r MsgNameField) (textCell . mailingListName . lst)
+                   <> headed (r MsgDescField) (textCell . mailingListDescription . lst)
+                   <> headed (r MsgLangField) (stringCell . show . mailingListLanguage . lst)
+                   <> headed (r MsgSubscriberCount) (stringCell . show . subs)
+                   <> headed (r MsgSenderCount) (stringCell . show . auts)
+                   <> headed (r MsgListActions) (cell . actions theDeleteForm)
   where lst (l, _, _) = entityVal l
         subs (_, s, _) = s
         auts (_, _, a) = a
         actions deleteForm (list, _, _) = $(widgetFile "list-actions")
+
+listsTable :: [(Entity MailingList, Int, Int)]
+           -> WidgetFor App ()
+listsTable lists = do
+  r <- handlerToWidget getMessageRender
+  deleteForm <- handlerToWidget $ generateFormPost $ dummyDeleteForm
+  encodeCellTable [class_ "table table-striped"]
+    (listsColonnade (textCell . r) deleteForm)
+    lists
+
+subscribersColonnade :: MailingListId -> (AppMessage -> Cell App) -> (ListRole -> Text) -> Colonnade Headed (UserId, Text, ListRole) (Cell App)
+subscribersColonnade listId r r' = headed (r MsgEmailAddress) (textCell . mail)
+                                   <> headed (r MsgRole) (textCell . r' . role')
+                                   <> headed (r MsgSubscriberActions) (cell . actions)
+  where mail (_, m, _) = m
+        role' (_, _, x) = x
+        actions (userId, _, role) = $(widgetFile "subscriber-actions")
 
 subscribersTable :: MailingListId
                  -> [(UserId, Text, ListRole)]
@@ -159,13 +171,9 @@ subscribersTable :: MailingListId
 subscribersTable listId subs = do
   r <- handlerToWidget getMessageRender
   r' <- handlerToWidget getMessageRender
-  buildBootstrap (mempty
-    <> Table.text (r MsgEmailAddress) mail
-    <> Table.text (r MsgRole) (r' . role')
-    <> Table.widget (r MsgSubscriberActions) actions) subs
-  where mail (_, m, _) = m
-        role' (_, _, x) = x
-        actions (userId, _, role) = $(widgetFile "subscriber-actions")
+  encodeCellTable [class_ "table table-striped"]
+    (subscribersColonnade listId (textCell . r) r')
+    subs
 
 listEditor :: Maybe (Entity MailingList) -> Widget
 listEditor mIL = do

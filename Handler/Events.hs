@@ -1,17 +1,11 @@
 module Handler.Events where
 
-import Import hiding ((<>), length, maximum)
+import Import hiding ((<>), length)
 import Languages
-import Prelude (maximum)
-import Control.Arrow ((<<<))
 import Data.Monoid ((<>))
-import Data.Text (center, length, justifyLeft)
 import Data.Time.Format (TimeLocale (wDays))
 import Data.Time.LocalTime (timeOfDayToTime)
-import Text.Blaze.Html (preEscapedToHtml)
-import Text.Hamlet (shamletFile)
-import Text.Cassius (cassiusFile, renderCss)
-import qualified Yesod.Table as Table
+import Text.Blaze.Colonnade (encodeHtmlTable)
 
 getEventR :: EventId -> Handler Html
 getEventR eventId = do
@@ -131,47 +125,56 @@ eventForm listId mEvt =
                             [Asc CategoryName]
                             categoryName
 
+eventActions :: (Widget, Enctype) -> Entity Event -> WidgetFor App ()
+eventActions (deleteWidget, deleteET) (Entity eventId event) = do
+  modalId <- handlerToWidget newIdent
+  labelId <- handlerToWidget newIdent
+  $(widgetFile "event-actions")
+
+eventCategoryName :: Entity Event -> WidgetFor App ()
+eventCategoryName (Entity _ event) = do
+  cat <- handlerToWidget $ runDB $ get404 $ eventCategory event
+  [whamlet|#{categoryName cat}|]
+
+eventColonnade :: (AppMessage -> Cell App) -> Language -> (Widget, Enctype) -> Colonnade Headed (Entity Event) (Cell App)
+eventColonnade r lang deleteForm = headed (r MsgEventDateTime) (textCell . formatDateTime lang . entityVal)
+                                   <> headed (r MsgEventCategory) (cell . eventCategoryName)
+                                   <> headed (r MsgEventLocation) (textCell . eventName . entityVal)
+                                   <> headed (r MsgEventName) (textCell . eventName . entityVal)
+                                   <> headed (r MsgEventActions) (cell . eventActions deleteForm)
+
+eventColonnadeSimple :: Language -> (AppMessage -> Text) -> (Text -> c) -> Colonnade Headed Event c
+eventColonnadeSimple lang r u = headed (u $ r MsgEventDateTime) (u . formatDateTime lang)
+                            <> headed (u $ r MsgEventLocation) (u . eventLocation)
+                            <> headed (u $ r MsgEventName) (u . eventName)
+
 eventTable :: Language -> [Entity Event] -> WidgetFor App ()
 eventTable lang events = do
   r <- handlerToWidget getMessageRender
   deleteForm <- handlerToWidget $ generateFormPost $ dummyDeleteForm
-  buildBootstrap (mempty
-    <> Table.text (r MsgEventDateTime) (formatDateTime lang . entityVal)
-    <> Table.widget (r MsgEventCategory) category
-    <> Table.text (r MsgEventLocation) (eventLocation . entityVal)
-    <> Table.text (r MsgEventName) (eventName . entityVal)
-    <> Table.widget (r MsgEventActions) (actions deleteForm)) events
-  where actions (deleteWidget, deleteET) (Entity eventId event) = do
-          modalId <- handlerToWidget newIdent
-          labelId <- handlerToWidget newIdent
-          $(widgetFile "event-actions")
-        category (Entity _ event) = do
-          cat <- handlerToWidget $ runDB $ get404 $ eventCategory event
-          [whamlet|#{categoryName cat}|]
+  encodeCellTable [class_ "table table-striped"]
+    (eventColonnade (textCell . r) lang deleteForm)
+    events
 
-eventsPlainTable :: MailingListId -> Handler Text
-eventsPlainTable listId = do
-  list <- runDB $ get404 listId
-  events <- upcomingEvents listId
-  if null events
-    then return ""
-    else return $ renderEvents (mailingListLanguage list) (entityVal <$> events)
+eventsPlainTable :: Colonnade Headed Event String -> [Event] -> Text
+eventsPlainTable col events = pack $ ascii col events
 
-eventsHtmlTable :: MailingListId -> Handler Html
-eventsHtmlTable listId = do
-  list <- runDB $ get404 listId
-  events <- upcomingEvents listId
-  dummy <- newIdent
-  let lang = mailingListLanguage list
-      style = $(cassiusFile "templates/events-table.cassius")
-  return $ if null events
-             then [shamlet||]
-             else $(shamletFile "templates/events-table.hamlet")
+eventsHtmlTable :: Colonnade Headed Event Html -> [Event] -> Html
+eventsHtmlTable col events = encodeHtmlTable (class_ "table table-striped") col
+  events
 
 eventsTables :: MailingListId -> Handler (Maybe (Text, Html))
 eventsTables listId = do
-  plain <- eventsPlainTable listId
-  html <- eventsHtmlTable listId
+  list <- runDB $ get404 listId
+  events <- map entityVal <$> upcomingEvents listId
+  let lang = mailingListLanguage list
+  let langCode = case lang of
+                   English -> ["en"]
+                   German -> ["de"]
+  site <- getYesod
+  let render = renderMessage site langCode
+  let plain = eventsPlainTable (eventColonnadeSimple lang render unpack) events
+  let html = eventsHtmlTable (eventColonnadeSimple lang render toHtml) events
   return $ case plain of
              "" -> Nothing
              p -> Just (p, html)
@@ -198,18 +201,3 @@ formatDateTime' loc evt = pack $ formatTime loc "%a. %F %H:%M" $ eventUTCTime ev
 formatDateTime :: Language -> Event -> Text
 formatDateTime English = formatDateTime' defaultTimeLocale
 formatDateTime German = formatDateTime' germanTimeLocale
-
-eventWidths :: [Event] -> (Int, Int)
-eventWidths = (maximum *** maximum) <<< unzip <<< map el
-  where el = (length . eventLocation) &&& (length . eventName)
-
-renderEvent :: Language -> (Int, Int) -> Event -> Text
-renderEvent lang (lW, nW) evt =
-  concat $ intersperse " | " [ center 21 ' ' $ formatDateTime lang evt
-                             , justifyLeft lW ' ' $ eventLocation evt
-                             , justifyLeft nW ' ' $ eventName evt
-                             ]
-
-renderEvents :: Language -> [Event] -> Text
-renderEvents lang evts = unlines $ renderEvent lang ws <$> evts
-  where ws = eventWidths evts

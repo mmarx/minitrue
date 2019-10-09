@@ -69,7 +69,6 @@ library
                  , yesod-auth
                  , yesod-static
                  , yesod-form
-                 , yesod-table
                  , classy-prelude
                  , classy-prelude-conduit
                  , classy-prelude-yesod
@@ -104,6 +103,9 @@ library
                  , random
                  , time
                  , systemd
+                 , colonnade
+                 , blaze-colonnade
+                 , yesod-colonnade
 
 executable         minitrue
     if flag(library-only)
