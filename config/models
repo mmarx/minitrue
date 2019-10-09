@@ -24,7 +24,7 @@ MailingListUser
     UniqueListUser user list
     UniqueUnsubscribe unsubkey list
 Archive
-    author UserId
+    author UserId Maybe
     list MailingListId
     subject Text
     body Textarea

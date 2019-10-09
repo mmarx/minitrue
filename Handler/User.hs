@@ -53,6 +53,7 @@ postUserDeleteR userId = do
         FormSuccess _ -> do
           mail <- runDB $ do
             user <- get404 userId
+            updateWhere [ArchiveAuthor ==. Just userId] [ArchiveAuthor =. Nothing]
             deleteWhere [UserRoleUser ==. userId]
             deleteWhere [MailingListUserUser ==. userId]
             delete userId

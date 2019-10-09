@@ -93,7 +93,7 @@ postSendMessageR listId = do
     FormSuccess msg -> do
       let subject = messageSubject msg
           body = messageBody msg
-      _ <- runDB $ insert $ Archive authId listId subject body time
+      _ <- runDB $ insert $ Archive (Just authId) listId subject body time
       sendMessageToList msg listId
       setMessageI $ MsgSendMessageSuccess (messageSubject msg) $ mailingListName list
       redirect HomeR
