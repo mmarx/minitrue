@@ -5,7 +5,7 @@ $if authId == userId
 $else
   <div .btn-group>
     <button type=button .btn-sm .btn .btn-default .dropdown-toggle data-toggle=dropdown>
-    _{mRole} <span class=caret></span>
+      _{mRole} <span class=caret></span>
     <ul .dropdown-menu role=menu>
       $forall role <- enumFrom minBound
         <li>
