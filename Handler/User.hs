@@ -26,7 +26,7 @@ getRoleR userId role = do
   msgRole <- getMessageRender >>= \r -> return $ r role
   defaultLayout $(widgetFile "user-role")
 
-postRoleR :: UserId -> Role -> Handler Html
+postRoleR :: UserId -> Role -> Handler Text
 postRoleR userId role = do
   ((roleResult, _), _) <- runFormPost userDummyForm
   mail <- runDB $ get404 userId >>= return . userEmail
@@ -43,7 +43,7 @@ postRoleR userId role = do
       setMessageI $ MsgChangeRoleFail mail
   redirectAnchor UsersR userId
 
-postUserDeleteR :: UserId -> Handler Html
+postUserDeleteR :: UserId -> Handler Text
 postUserDeleteR userId = do
   authId <- requireAuthId
   if authId == userId
@@ -82,8 +82,7 @@ userDummyForm extra = do
                 ^{fvInput view}|]
   return (res, widget)
 
-userTable :: [(UserId, User, Maybe Role)]
-          -> WidgetT App IO ()
+userTable :: [(UserId, User, Maybe Role)] -> WidgetFor App ()
 userTable users = do
   r <- handlerToWidget getMessageRender
   buildBootstrap (mempty

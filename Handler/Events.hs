@@ -85,7 +85,7 @@ upcomingEvents listId = upcomingEvents' [EventList ==. listId]
 
 upcomingEvents' :: [Filter Event] -> Handler [Entity Event]
 upcomingEvents' filt = do
-  today <- lift $ utctDay <$> getCurrentTime
+  today <- liftIO $ utctDay <$> getCurrentTime
   runDB $ selectList ([EventDate >=. today] ++ filt)
                      [ Asc EventDate
                      , Asc EventTime
@@ -131,7 +131,7 @@ eventForm listId mEvt =
                             [Asc CategoryName]
                             categoryName
 
-eventTable :: Language -> [Entity Event] -> WidgetT App IO ()
+eventTable :: Language -> [Entity Event] -> WidgetFor App ()
 eventTable lang events = do
   r <- handlerToWidget getMessageRender
   deleteForm <- handlerToWidget $ generateFormPost $ dummyDeleteForm

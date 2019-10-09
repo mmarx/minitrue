@@ -75,7 +75,7 @@ categoryDeleteForm extra = do
   return (res, widget)
 
 categoryTable :: [Entity Category]
-              -> WidgetT App IO ()
+              -> WidgetFor App ()
 categoryTable cats = do
   r <- handlerToWidget getMessageRender
   buildBootstrap (mempty

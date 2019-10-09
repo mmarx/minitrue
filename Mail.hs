@@ -13,8 +13,11 @@ module Mail
 import Prelude
 import Data.Monoid ((<>))
 import Data.Text
-import Network.Mail.Mime (Mail (mailHeaders))
-import Network.Mail.SMTP hiding (sendMail)
+import Network.Mail.Mime (Mail (mailHeaders)
+                         , plainPart
+                         , htmlPart)
+import Network.Mail.SMTP hiding (sendMail
+                                , htmlPart)
 import Text.Shakespeare.Text
 import Text.Hamlet (Html, shamlet)
 import Text.Blaze.Html.Renderer.Text (renderHtml)
@@ -95,7 +98,7 @@ mailFromTo' :: Address -> Address -> Maybe Text -> Maybe (Text, Html) -> Text ->
 mailFromTo' sender receiver mUnsub mEvents subject body = do
   addHeaders headers $ simpleMail sender [receiver] [] [] subject body'
   where wrapped = wrapBody name mUnsub mEvents body
-        body' = [ plainTextPart . plainBody $ wrapped
+        body' = [ plainPart . plainBody $ wrapped
                 , htmlPart . renderHtml . htmlBody $ wrapped
                 ]
         name = addressName receiver

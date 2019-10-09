@@ -44,7 +44,7 @@ mkMessage "App" "messages" "en"
 mkYesodData "App" $(parseRoutesFile "config/routes")
 
 -- | A convenient synonym for creating forms.
-type Form x = Html -> MForm (HandlerT App IO) (FormResult x, Widget)
+type Form x = Html -> MForm (HandlerFor App) (FormResult x, Widget)
 
 -- Please see the documentation for the Yesod typeclass. There are a number
 -- of settings which can be configured by overriding methods here.
@@ -141,10 +141,10 @@ instance Yesod App where
 
     -- What messages should be logged. The following includes all messages when
     -- in development, and warnings and errors in production.
-    shouldLog app _source level =
-        appShouldLogAll (appSettings app)
-            || level == LevelWarn
-            || level == LevelError
+    shouldLogIO app _source level =
+        return (appShouldLogAll (appSettings app)
+                || level == LevelWarn
+                || level == LevelError)
 
     makeLogger = return . appLogger
 
@@ -167,7 +167,7 @@ instance YesodAuth App where
     -- Override the above two destinations when a Referer: header is present
     redirectToReferer _ = False
 
-    authenticate creds = runDB $ do
+    authenticate creds = liftHandler . runDB $ do
       x <- getBy $ UniqueUser $ credsIdent creds
       case x of
        Just (Entity uid _) -> return $ Authenticated uid
@@ -198,10 +198,10 @@ instance YesodAuthEmail App where
   type AuthEmailId App = UserId
 
   afterPasswordRoute _ = HomeR
-  addUnverified email verkey = runDB $ insert $
+  addUnverified email verkey = liftHandler . runDB $ insert $
                                User email Nothing (Just verkey) False
 
-  verifyAccount uId = runDB $ do
+  verifyAccount uId = liftHandler . runDB $ do
     mUser <- get uId
     case mUser of
       Nothing -> return Nothing
@@ -221,15 +221,15 @@ instance YesodAuthEmail App where
         body' = MailBody { plainBody = [lt|#{T.replace "\\n" "\n" body}|]
                          , htmlBody = [shamlet|#{preEscapedToHtml $ T.replace "\\n" "<br>" body}|]
                          }
-    sendMail $ mailFromTo sender receiver subject body'
+    liftHandler . sendMail $ mailFromTo sender receiver subject body'
 
-  getVerifyKey = runDB . fmap (join . fmap userVerkey) . get
-  setVerifyKey uId verkey = runDB $ update uId [UserVerkey =. Just verkey]
-  getPassword = runDB . fmap (join . fmap userPassword) . get
-  setPassword uId pwd = runDB $ update uId [UserPassword =. Just pwd]
+  getVerifyKey = liftHandler . runDB . fmap (join . fmap userVerkey) . get
+  setVerifyKey uId verkey = liftHandler . runDB $ update uId [UserVerkey =. Just verkey]
+  getPassword = liftHandler . runDB . fmap (join . fmap userPassword) . get
+  setPassword uId pwd = liftHandler . runDB $ update uId [UserPassword =. Just pwd]
 
-  getEmail = runDB . fmap (fmap userEmail) . get
-  getEmailCreds email = runDB $ do
+  getEmail = liftHandler . runDB . fmap (fmap userEmail) . get
+  getEmailCreds email = liftHandler . runDB $ do
     mUser <- getBy $ UniqueUser email
     case mUser of
       Nothing -> return Nothing
@@ -246,7 +246,7 @@ instance YesodAuthEmail App where
       LT -> return $ Left "Password must be at least 8 characters long."
       _ -> return $ Right ()
 
-  confirmationEmailSentResponse mail = liftM toTypedContent $ defaultLayout $ do
+  confirmationEmailSentResponse mail = liftHandler . selectRep . provideRep . defaultLayout $ do
     setMessageI $ AuthMessage.ConfirmationEmailSent mail
     redirect HomeR
 
@@ -261,7 +261,7 @@ sendMail :: Mail -> Handler ()
 sendMail mail = do
   master <- getYesod
   let host = mailHost $ appSettings master
-  lift $ SMTP.sendMail host mail
+  liftIO $ SMTP.sendMail host mail
 
 -- This instance is required to use forms. You can modify renderMessage to
 -- achieve customized and internationalized form validation messages.

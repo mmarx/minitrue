@@ -85,7 +85,7 @@ getSendMessageR listId = do
 postSendMessageR :: MailingListId -> Handler Html
 postSendMessageR listId = do
   authId <- requireAuthId
-  time <- lift getCurrentTime
+  time <- liftIO getCurrentTime
   list <- runDB $ get404 listId
   ((msgResult, _), _) <- runFormPost . messageForm $ Nothing
 
@@ -137,7 +137,7 @@ listForm mList = renderBootstrap3 BootstrapBasicForm $ MailingList
   where langField = selectField optionsEnum
 
 listsTable :: [(Entity MailingList, Int, Int)]
-           -> WidgetT App IO ()
+           -> WidgetFor App ()
 listsTable subscribers = do
   r <- handlerToWidget getMessageRender
   deleteForm <- handlerToWidget $ generateFormPost $ dummyDeleteForm
@@ -155,7 +155,7 @@ listsTable subscribers = do
 
 subscribersTable :: MailingListId
                  -> [(UserId, Text, ListRole)]
-                 -> WidgetT App IO ()
+                 -> WidgetFor App ()
 subscribersTable listId subs = do
   r <- handlerToWidget getMessageRender
   r' <- handlerToWidget getMessageRender

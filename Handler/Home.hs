@@ -26,7 +26,7 @@ getHomeR = do
 
 subscriptionsTable :: (Maybe ListRole -> Bool)
                    -> [(MailingListId, MailingList, Maybe ListRole)]
-                   -> WidgetT App IO ()
+                   -> WidgetFor App ()
 subscriptionsTable canEdit subs = do
   r <- handlerToWidget getMessageRender
   r' <- handlerToWidget getMessageRender

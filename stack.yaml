@@ -2,8 +2,8 @@ flags: {}
 packages:
 - '.'
 extra-deps:
-- smtp-mail-0.1.4.5
-- systemd-1.0.2
-- yesod-bin-1.4.17.1
-- yesod-table-2.0.1
-resolver: lts-4.2
+- smtp-mail-0.2.0.0
+- systemd-1.2.0
+- yesod-bin-1.6.0.3
+- yesod-table-2.0.3
+resolver: lts-14.7

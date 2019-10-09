@@ -10,7 +10,6 @@ import Database.Persist.Sql
 import Data.Typeable ()
 import Data.Time
 import Data.Data
-import Data.Aeson.TH
 
 import Roles
 import Languages
@@ -22,8 +21,6 @@ import Languages
 share [mkPersist sqlSettings, mkMigrate "migrateAll"]
     $(persistFileWith lowerCaseSettings "config/models")
 
-$(deriveJSON defaultOptions ''TimeOfDay)
-
 data Message = Message { messageSubject :: Text
                        , messageBody :: Textarea
                        }
@@ -31,13 +28,14 @@ data Message = Message { messageSubject :: Text
 anchor :: ToBackendKey SqlBackend ent => Key ent -> Text
 anchor = pack . show . fromSqlKey
 
-routeAnchor :: (Yesod master, ToBackendKey SqlBackend ent) => Route master -> Key ent -> HandlerT master IO Text
+routeAnchor :: (Yesod master, ToBackendKey SqlBackend ent) => Route master -> Key ent -> HandlerFor master Text
 routeAnchor route key = do
   renderUrl <- getUrlRender
   return $ concat [ renderUrl route
-                  , "#"
-                  , anchor key
-                  ]
+                           , "#"
+                           , anchor key
+                           ]
 
-redirectAnchor :: (Yesod master, ToBackendKey SqlBackend ent) => Route master -> Key ent -> HandlerT master IO Html
+redirectAnchor :: (Yesod master, ToBackendKey SqlBackend ent)
+               => Route master -> Key ent -> HandlerFor master Text
 redirectAnchor route key = routeAnchor route key >>= redirect

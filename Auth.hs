@@ -64,7 +64,7 @@ origAuth = AE.authEmail
 authEmail :: YesodAuthEmail master => AuthPlugin master
 authEmail = origAuth { apDispatch = dispatch } { apLogin = login }
 
-login :: YesodAuthEmail master => (Route Auth -> Route master) -> WidgetT master IO ()
+login :: YesodAuthEmail master => (Route Auth -> Route master) -> WidgetFor master ()
 login toMaster = do
   email <- newIdent
   pwd <- newIdent
@@ -81,7 +81,7 @@ getRegisterR :: YesodAuthEmail master => AuthHandler master Html
 getRegisterR = do
   email <- newIdent
   toParent <- getRouteToParent
-  lift $ defaultLayout $ do
+  liftHandler . defaultLayout $ do
     setTitleI Msg.RegisterLong
     $(widgetFile "register")
 
@@ -89,13 +89,13 @@ getForgotPasswordR :: YesodAuthEmail master => AuthHandler master Html
 getForgotPasswordR = do
   email <- newIdent
   toParent <- getRouteToParent
-  lift $ defaultLayout $ do
+  liftHandler . defaultLayout $ do
     setTitleI Msg.PasswordResetTitle
     $(widgetFile "forgot-password")
 
 getPasswordR :: YesodAuthEmail master => AuthHandler master Html
 getPasswordR = do
-  mAuthId <- lift maybeAuthId
+  mAuthId <- maybeAuthId
   case mAuthId of
     Just _ -> return ()
     Nothing -> void $ loginErrorMessageI LoginR Msg.BadSetPass
@@ -103,7 +103,7 @@ getPasswordR = do
   pwdNew <- newIdent
   pwdCon <- newIdent
   toParent <- getRouteToParent
-  needOld <- maybe (return True) (lift . needOldPassword) mAuthId
-  lift $ defaultLayout $ do
+  needOld <- maybe (return True) needOldPassword mAuthId
+  liftHandler . defaultLayout $ do
     setTitleI Msg.SetPassTitle
     $(widgetFile "password")
