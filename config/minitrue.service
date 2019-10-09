@@ -1,7 +1,7 @@
 [Unit]
 Description=The Ministry of Truth
-After=postgresql@9.6-main.service
-Requires=postgresql@9.6-main.service
+After=postgresql@11-main.service
+Requires=postgresql@11-main.service
 
 [Service]
 Type=simple
