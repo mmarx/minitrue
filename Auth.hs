@@ -81,6 +81,7 @@ getRegisterR :: YesodAuthEmail master => AuthHandler master Html
 getRegisterR = do
   email <- newIdent
   toParent <- getRouteToParent
+  request <- getRequest
   liftHandler . defaultLayout $ do
     setTitleI Msg.RegisterLong
     $(widgetFile "register")
@@ -89,6 +90,7 @@ getForgotPasswordR :: YesodAuthEmail master => AuthHandler master Html
 getForgotPasswordR = do
   email <- newIdent
   toParent <- getRouteToParent
+  request <- getRequest
   liftHandler . defaultLayout $ do
     setTitleI Msg.PasswordResetTitle
     $(widgetFile "forgot-password")
@@ -104,6 +106,7 @@ getPasswordR = do
   pwdCon <- newIdent
   toParent <- getRouteToParent
   needOld <- maybe (return True) needOldPassword mAuthId
+  request <- getRequest
   liftHandler . defaultLayout $ do
     setTitleI Msg.SetPassTitle
     $(widgetFile "password")
